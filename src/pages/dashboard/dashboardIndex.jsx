@@ -1,13 +1,16 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import useDashboardIndex from '../../hooks/useDashboardIndex';
+import BoxRotate from '../../components/boxRotate';
 
 function DashboardIndex() {
-    const {isLoading, bulan, data} = useDashboardIndex()
+    const { isLoading, bulan, data } = useDashboardIndex()
 
     if (isLoading) {
-        return <>Please wait...</>
+        return <div className='center'>
+            <BoxRotate />
+        </div>
     }
-    
+
     return (<>
         <div className="p-4 container">
             <div className='flex justify-between'>
@@ -26,30 +29,30 @@ function DashboardIndex() {
                     <span className="text-xl">Rp{data.map(e => e.pendapatan).reduce((acc, cur) => acc + cur, 0).toLocaleString()}</span>
                 </div>
             </div>
-                <div className="shadow-2xl rounded-xl">
-                    <h2 className="text-xl font-semibold my-4">Grafik Transaksi</h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                            <Line type="monotone" dataKey="transaksi" stroke="#8884d8" />
-                            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                            <XAxis dataKey="day" />
-                            <YAxis />
-                            <Tooltip formatter={e => e.toLocaleString()} />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
-                <div className="shadow-2xl rounded-xl">
-                    <h2 className="text-xl font-semibold my-4">Grafik Pendapatan</h2>
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                            <Line type="monotone" dataKey="pendapatan" stroke="#8884d8" />
-                            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                            <XAxis dataKey="day" />
-                            <YAxis />
-                            <Tooltip formatter={e => e.toLocaleString()} />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
+            <div className="shadow-2xl rounded-xl">
+                <h2 className="text-xl font-semibold my-4">Grafik Transaksi</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                        <Line type="monotone" dataKey="transaksi" stroke="#8884d8" />
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <XAxis dataKey="day" />
+                        <YAxis />
+                        <Tooltip formatter={e => e.toLocaleString()} />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
+            <div className="shadow-2xl rounded-xl">
+                <h2 className="text-xl font-semibold my-4">Grafik Pendapatan</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                        <Line type="monotone" dataKey="pendapatan" stroke="#8884d8" />
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <XAxis dataKey="day" />
+                        <YAxis />
+                        <Tooltip formatter={e => e.toLocaleString()} />
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
             <div className='flex gap-2'>
             </div>
 

@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { HashRouter, Route, Routes } from 'react-router'
 import useAuthGuard from './hooks/useAuthGuard'
 import Index from './pages'
@@ -21,10 +22,10 @@ function App() {
           <Dashboard />
         </ProtectedRoute>
         } >
-          <Route index element={<DashboardIndex />} />
-          <Route path="kos" element={<Kos />} />
-          <Route path="penghuni" element={<Penghuni />} />
-          <Route path="transaksi" element={<Transaksi />} />
+            <Route index element={<DashboardIndex />} />
+            <Route path="kos" element={<Kos />} />
+            <Route path="penghuni" element={<Penghuni />} />
+            <Route path="transaksi" element={<Transaksi />} />
         </Route>
 
       </Routes>
