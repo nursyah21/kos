@@ -41,6 +41,13 @@
     @apply flex flex-col h-screen justify-center items-center
 }
 
-input {
+input:focus {
     @apply border-0;
+}
+label {
+  @apply flex flex-col gap-2;
+}
+
+tbody tr {
+  @apply hover:bg-base-300;
 }
