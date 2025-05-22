@@ -5,9 +5,9 @@ import Dashboard from './pages/dashboard/dashboard'
 import DashboardIndex from './pages/dashboard/dashboardIndex'
 import Kos from './pages/dashboard/kos'
 import Transaksi from './pages/dashboard/transaksi'
-import Login from './pages/login'
 import Penghuni from './pages/dashboard/users/penghuni'
-import Users from './pages/dashboard/users/users'
+import Petugas from './pages/dashboard/users/petugas'
+import Login from './pages/login'
 
 function App() {
   const { ProtectedRoute, PublicRoute } = useAuthGuard()
@@ -25,10 +25,10 @@ function App() {
             <Route index element={<DashboardIndex />} />
             <Route path="kos" element={<Kos />} />
             <Route path="transaksi" element={<Transaksi />} />
-            <Route path="users" element={<Users />} >
+            <Route path="users" >
               <Route index element={<Navigate to={'penghuni'} />} />
               <Route path='penghuni' element={<Penghuni />} />
-              <Route path='petugas' element={<Penghuni />} />
+              <Route path='petugas' element={<Petugas />} />
             </Route>
         </Route>
 

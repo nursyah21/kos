@@ -1,5 +1,5 @@
 function Table({ rows = [''], children }) {
-    return (<div className="overflow-x-auto min-h-72">
+    return (<div className="overflow-x-auto min-h-72 pb-24">
         <table className="table">
             <thead>
                 <tr>
@@ -8,7 +8,7 @@ function Table({ rows = [''], children }) {
                     )}
                 </tr>
             </thead>
-            <tbody>
+            <tbody className="">
                 {children}
             </tbody>
         </table>

@@ -5,12 +5,14 @@ export const schemaLogin = yup.object().shape({
     password: yup.string().required()
 })
 
+
 export const schemaPenghuni = yup.object().shape({
     id: yup.string(),
     nama: yup.string().required(),
     no_hp: yup.string().required(),
     image: yup.string(),
-    imageChange: yup.string()
+    imageChange: yup.string(),
+    search: yup.string()
 })
 
 export type TSchemaPenghuni = yup.InferType<typeof schemaPenghuni>
