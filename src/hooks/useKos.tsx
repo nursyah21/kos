@@ -3,17 +3,17 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { db } from '../lib/firebase';
-import { getId } from '../lib/getId';
-import { schemaPenghuni } from '../schema/penghuni';
+import { schemaPenghuni, TSchemaKos } from '../schema';
 
 import { getDocs } from "@firebase/firestore";
 import useSWR, { mutate } from "swr";
-import { TSchemaPenghuni } from "../schema/penghuni";
+import { $ } from '../lib/utils';
+import { TSchemaPenghuni } from "../schema";
 
 const fetcher = async () => {
     const querySnapshot = await getDocs(collection(db, 'kos'));
     return querySnapshot.docs.map(doc => ({
-        ...doc.data() as TSchemaPenghuni
+        ...doc.data() as TSchemaKos
     }));
 };
 
@@ -32,12 +32,12 @@ function useKos() {
         } catch {
             toast.error('Error added kos')
         }
-        mutate('penghuni')
+        mutate('kos')
         // @ts-ignore
-        getId('modal_penghuni').close()
+        $('modal_kos').close()
     })
 
-    const { data, isLoading } = useSWR<TSchemaPenghuni[]>("penghuni", fetcher)
+    const { data, isLoading } = useSWR("kos", fetcher)
 
     return {
         register, onSubmit, errors, isSubmitting,

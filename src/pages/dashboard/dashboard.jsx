@@ -1,5 +1,5 @@
 import { signOut } from '@firebase/auth';
-import { LayoutDashboard, LogOut, Rows, UserRound } from 'lucide-react';
+import { ArrowLeftRight, Blinds, LayoutDashboard, LogOut, UsersRound } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router';
 import { auth } from '../../lib/firebase';
 
@@ -10,9 +10,10 @@ function Dashboard() {
                 <div></div>
                 <div className='gap-12 flex-col flex '>
                     {[['/dashboard', <LayoutDashboard />],
-                    ['/dashboard/penghuni', <UserRound />],
-                    ['/dashboard/kos', <Rows />]].map((item, id) =>
-                        <NavLink key={id} end={true} to={item[0]}>
+                    ['/dashboard/transaksi', <ArrowLeftRight />],
+                    ['/dashboard/kos', <Blinds />],
+                    ['/dashboard/users', <UsersRound />, true]].map((item, id) =>
+                        <NavLink key={id} end={!item[2]} to={item[0]}>
                             {({ isActive }) => <div className={!isActive ? 'text-gray-600' : ''}>
                                 {item[1]}
                             </div>

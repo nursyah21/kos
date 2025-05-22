@@ -3,12 +3,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { db } from '../lib/firebase';
-import { getId } from '../lib/getId';
-import { schemaPenghuni } from '../schema/penghuni';
+import { schemaPenghuni } from '../schema';
 
 import { getDocs } from "@firebase/firestore";
 import useSWR, { mutate } from "swr";
-import { TSchemaPenghuni } from "../schema/penghuni";
+import { TSchemaPenghuni } from "../schema";
+import { $ } from '../lib/utils';
 
 const fetcher = async () => {
     const querySnapshot = await getDocs(collection(db, 'penghuni'));
@@ -18,26 +18,26 @@ const fetcher = async () => {
 };
 
 
-function usePenghuni() {
+function useTransaksi() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: yupResolver(schemaPenghuni)
     })
     const onSubmit = handleSubmit(async data => {
         try {
-            await addDoc(collection(db, 'penghuni'), {
+            await addDoc(collection(db, 'transaksi'), {
                 ...data,
                 created_at: serverTimestamp()
             });
-            toast.success('penghuni added!')
+            toast.success('transaksi added!')
         } catch {
-            toast.error('Error added penghuni')
+            toast.error('Error added transaksi')
         }
-        mutate('penghuni')
+        mutate('transaksi')
         // @ts-ignore
-        getId('modal_penghuni').close()
+        $('modal_transaksi').close()
     })
 
-    const { data, isLoading } = useSWR<TSchemaPenghuni[]>("penghuni", fetcher)
+    const { data, isLoading } = useSWR<TSchemaPenghuni[]>("transaksi", fetcher)
 
     return {
         register, onSubmit, errors, isSubmitting,
@@ -45,4 +45,4 @@ function usePenghuni() {
     };
 }
 
-export default usePenghuni;
+export default useTransaksi;

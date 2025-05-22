@@ -3,7 +3,7 @@ import BoxRotate from '../../components/boxRotate';
 import Modal from '../../components/modal';
 import Table from '../../components/table';
 import useKos from '../../hooks/useKos';
-import { getId } from '../../lib/getId';
+import { $ } from '../../lib/utils.ts';
 
 
 function Kos() {
@@ -22,11 +22,11 @@ function Kos() {
             <div className='flex justify-between sticky top-0 py-2 bg-base-100 z-10'>
                 <h2 className="text-2xl font-semibold">Kos</h2>
                 <button className='btn btn-primary'
-                    onClick={() => getId('modal_kos')?.showModal()}
+                    onClick={() => $('modal_kos')?.showModal()}
                 ><Plus /> Kos</button>
             </div>
             <div className="overflow-x-auto mt-4">
-                <Table rows={['#', 'Kamar Kos', 'Penghuni', 'Tgl Masuk', 'Biaya (Rb)', 'Petugas', '']}>
+                <Table rows={['#', 'Kamar Kos', 'Penghuni', 'Tgl Masuk', 'Biaya (Rb)', '']}>
                     {
                         data?.map((data, i) => <tr key={i}>
                             <td>{i + 1}</td>
@@ -49,16 +49,19 @@ function Kos() {
                 </Table>
             </div>
         </div>
-        <Modal id='modal_kos' title='Add Penghuni'>
+        <Modal id='modal_kos' title='Add Kos'>
             <form method='dialog' className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
-                <label className='text-sm'>Nama:
-                    <input {...register('nama')} className="input w-full" type="text" placeholder="nama" required />
+                <label className='text-sm'>Kos:
+                    <input {...register('kos')} className="input w-full" type="text" placeholder="kos" required />
                 </label>
-                <label className='text-sm'>No HP:
-                    <input {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" required />
+                <label className='text-sm'>Nama penghuni:
+                    <input {...register('nama')} className="input w-full" type="number" placeholder="nama" />
                 </label>
-                <label className='text-sm'>Tgl Bayar:
-                    <input {...register('tgl_bayar')} className="input w-full" type="date" placeholder="tgl bayar" required />
+                <label className='text-sm'>No HP Penghuni:
+                    <input {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
+                </label>
+                <label className='text-sm'>Tgl Masuk:
+                    <input {...register('tgl_bayar')} className="input w-full" type="date" placeholder="tgl bayar" />
                 </label>
                 <label className='text-sm'>Petugas:
                     <input {...register('petugas')} className="input w-full" type="text" placeholder="petugas" required list='petugas' />

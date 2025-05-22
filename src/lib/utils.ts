@@ -6,3 +6,5 @@ export const formatCurrency = (value) => {
 
     return Number(numericValue).toLocaleString('en-US');
 };
+
+export const $ = (id:string) => document.getElementById(id)
