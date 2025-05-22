@@ -1,7 +1,7 @@
 import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import useSWR, { mutate } from 'swr';
@@ -27,12 +27,16 @@ const useHooks = () => {
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const { data, isLoading } = useSWR('penghuni', fetcher)
 
-    $('.file-input')?.addEventListener('change', async (e) => {
+    const total = watch('image')
+    useEffect(() => {
+        if (!total?.length) { return }
+
         // @ts-ignore
-        const file = e.target?.files[0]
-        if (file.size > 100 * 1024) {
-            toast.error('max size 100kb')
+        if (total[0].size > 100 * 1024) {
             setValue('imageChange', '')
+            setValue('image', '')
+            console.log(watch('imageChange'))
+            toast.error('max size 100kb')
             return
         }
         const reader = new FileReader()
@@ -41,10 +45,8 @@ const useHooks = () => {
             setValue('imageChange', reader.result)
         }
         // @ts-ignore
-        reader.readAsDataURL(file)
-    })
-
-    console.log('image', watch('imageChange') || watch('image'))
+        reader.readAsDataURL(total[0])
+    }, [total])
 
     const openModal = (data?: TSchemaPenghuni, type: TypeSubmit = 'add') => {
         reset()
@@ -52,7 +54,7 @@ const useHooks = () => {
             setValue('id', data.id)
             setValue('nama', data.nama)
             setValue('no_hp', data.no_hp)
-            setValue('image', data.image)
+            setValue('imageChange', data.image)
             setTypeSubmit(type)
         }
         // @ts-ignore
@@ -79,7 +81,6 @@ const useHooks = () => {
                 toast.success('penghuni deleted!')
             }
         } catch (e) {
-            console.log(e, data)
             toast.error(`error ${typeSubmit} penghuni`)
         }
         mutate('penghuni')
@@ -99,7 +100,7 @@ function Penghuni() {
     } = useHooks()
 
     if (isLoading) {
-        return <div className='center'>
+        return <div className='center' id='loading'>
             <BoxRotate />
         </div>
     }
@@ -121,10 +122,10 @@ function Penghuni() {
                             <td>{data.no_hp}</td>
                             <td>
                                 <div className="dropdown dropdown-end">
-                                    <button className=" p-0"><Ellipsis /></button>
+                                    <button id='dropdown' className="p-0"><Ellipsis /></button>
                                     <ul className="menu dropdown-content bg-base-300  z-1 w-48  p-2">
-                                        <li><button onClick={() => openModal(data, 'edit')}>Edit</button></li>
-                                        <li><button onClick={() => openModal(data, 'delete')}>Delete</button></li>
+                                        <li><button id='edit' onClick={() => openModal(data, 'edit')}>Edit</button></li>
+                                        <li><button id='delete' onClick={() => openModal(data, 'delete')}>Delete</button></li>
                                     </ul>
                                 </div>
                             </td>
@@ -143,14 +144,12 @@ function Penghuni() {
                 </label>
                 <label className='text-sm'>Photo penghuni: *max 100kb
                     {
-                        // @ts-ignore
-                        (watch('image')?.length > 0 || watch('imageChange')?.length > 0) && (
-                            <img
-                                src={watch('imageChange') || watch('image')}
-                                alt="Image Preview"
-                                className={'mt-2 w-full h-32 object-cover'}
-                            />
-                        )}
+                        <img
+                            src={watch('imageChange') || watch('image') || '/emptyImage.png'}
+                            alt="Image Preview"
+                            className={'mt-2 w-full h-32 object-cover'}
+                        />
+                    }
                     <div className='flex items-center gap-4'>
                         <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>

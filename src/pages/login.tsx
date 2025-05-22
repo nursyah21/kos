@@ -1,10 +1,10 @@
-import { yupResolver } from "@hookform/resolvers/yup"
-import { schemaLogin } from "../schema"
-import { useNavigate } from "react-router"
 import { signInWithEmailAndPassword } from "@firebase/auth"
-import { auth } from "../lib/firebase"
-import { toast } from "sonner"
+import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router"
+import { toast } from "sonner"
+import { auth } from "../lib/firebase"
+import { schemaLogin } from "../schema"
 
 
 function useHooks() {
@@ -23,7 +23,7 @@ function useHooks() {
     })
     const location = window.location.hostname
     const isDemo = (location == 'localhost' || location == 'demo-kos.surge.sh')
-    return { onSubmit, register, onSubmit, isSubmitting, isDemo };
+    return { onSubmit, register, isSubmitting, isDemo };
 }
 
 function Login() {

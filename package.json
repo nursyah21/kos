@@ -9,6 +9,7 @@
     "build": "yarn lint && vite build",
     "preview": "serve ./dist",
     "preview:no-out": "serve ./dist > nul 2>&1",
+    "test:rebuild": "yarn build && playwright test --headed",
     "test": "playwright test --headed",
     "test:ui": "playwright test --ui",
     "loadtest:prod": "autocannon -c 200 http://localhost:3333",
@@ -45,6 +46,7 @@
     "@eslint/js": "^9.25.0",
     "@playwright/test": "^1.52.0",
     "@tanstack/react-query": "^5.76.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^22.15.18",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
@@ -55,6 +57,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "jsdom": "^26.1.0",
     "serve": "^14.2.4",
     "surge": "^0.24.6",
     "vite": "^6.3.5"
