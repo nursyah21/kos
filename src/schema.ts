@@ -1,12 +1,16 @@
 import * as yup from 'yup'
 
+export const schemaLogin = yup.object().shape({
+    email: yup.string().required(),
+    password: yup.string().required()
+})
+
 export const schemaPenghuni = yup.object().shape({
     id: yup.string(),
     nama: yup.string().required(),
     no_hp: yup.string().required(),
-    tgl_bayar: yup.string().required(),
-    total: yup.string().required(),
-    petugas: yup.string().required()
+    image: yup.string(),
+    imageChange: yup.string()
 })
 
 export type TSchemaPenghuni = yup.InferType<typeof schemaPenghuni>
