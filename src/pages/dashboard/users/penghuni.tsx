@@ -12,6 +12,7 @@ import Table from '../../../components/table';
 import { db } from '../../../lib/firebase';
 import { $ } from '../../../lib/utils';
 import { schemaPenghuni, TSchemaPenghuni } from '../../../schema';
+import { upload } from '../../../lib/upload';
 
 const fetcher = async () => {
     const querySnapshot = await getDocs(collection(db, 'penghuni'));
@@ -26,26 +27,27 @@ const useHooks = () => {
         resolver: yupResolver(schemaPenghuni)
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
+    const [isUploading, setIsUploading] = useState(false)
 
     const total = watch('image')
     useEffect(() => {
         if (!total?.length) { return }
 
         // @ts-ignore
-        if (total[0].size > 100 * 1024) {
-            setValue('imageChange', '')
-            setValue('image', '')
-            console.log(watch('imageChange'))
-            toast.error('max size 100kb')
+        if (total[0].size > 5 * 1024 * 1024) {
+            toast.error('max size 5mb')
             return
         }
-        const reader = new FileReader()
-        reader.onloadend = () => {
-            // @ts-ignore
-            setValue('imageChange', reader.result)
-        }
-        // @ts-ignore
-        reader.readAsDataURL(total[0])
+        setIsUploading(true)
+        upload(total[0]).then(async res => {
+            const data = await res.json()
+            setValue('imageChange', data.url)
+            toast.success('upload success')
+        }).catch(err => {
+            console.log(err)
+            toast.error('upload error')
+        }).finally(() => setIsUploading(false))
+
     }, [total])
 
     const openModal = (data?: TSchemaPenghuni, type: TypeSubmit = 'add') => {
@@ -90,13 +92,14 @@ const useHooks = () => {
     return {
         setValue, register, onSubmit, isSubmitting,
         watch, errors, openModal,
-        typeSubmit
+        typeSubmit, isUploading
     }
 }
 
+
 function Penghuni() {
     const { register, onSubmit, isSubmitting,
-        watch, openModal, typeSubmit,
+        watch, openModal, typeSubmit, isUploading
     } = useHooks()
     const { data, isLoading } = useSWR('penghuni', fetcher)
 
@@ -105,6 +108,8 @@ function Penghuni() {
             <BoxRotate />
         </div>
     }
+    const imageId = watch('imageChange') || watch('image') || 'default-image-id';
+
 
     return (<>
         <div className="p-4 container">
@@ -163,17 +168,17 @@ function Penghuni() {
                 <label className='text-sm'>No HP penghuni:
                     <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
                 </label>
-                <label className='text-sm'>Photo penghuni: *max 100kb
+                <label className='text-sm'>Photo penghuni: *max 5mb
                     {
                         <img
                             // fallback to make sure image can show properly
-                            src={watch('imageChange') || watch('image')?.length ? watch('image') : '/emptyImage.png'}
+                            src={watch('imageChange') || '/emptyImage.png'}
                             alt="Image Preview"
                             className={'mt-2 w-full h-32 object-cover'}
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
                 <button className='btn' disabled={isSubmitting} type='submit'>Submit</button>
