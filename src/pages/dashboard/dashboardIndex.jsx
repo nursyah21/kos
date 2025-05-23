@@ -18,7 +18,7 @@ function DashboardIndex() {
                 <h2 className="font-bold my-2">{bulan[new Date().getMonth()]} {new Date().getFullYear()}</h2>
             </div>
 
-            <div className="flex gap-4 py-12">
+            <div className="flex gap-4 py-12 sm:flex-row flex-col">
                 <div className="flex-1 shadow-2xl rounded-xl">
                     <h2 className="text-xl font-semibold">Total Transaksi</h2>
                     <span className="text-xl">{data.map(e => e.transaksi).reduce((acc, cur) => acc + cur, 0)}</span>

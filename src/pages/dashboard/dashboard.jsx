@@ -11,7 +11,7 @@ function Dashboard() {
                 <div className='gap-12 flex-col flex '>
                     {[['/dashboard', <LayoutDashboard />],
                     ['/dashboard/transaksi', <ArrowLeftRight />],
-                    ['/dashboard/kos', <Blinds />],
+                    ['/dashboard/unit', <Blinds />, true],
                     ['/dashboard/users', <UsersRound />, true]].map((item, id) =>
                         <NavLink key={id} end={!item[2]} to={item[0]}>
                             {({ isActive }) => <div className={!isActive ? 'text-gray-600' : ''}>

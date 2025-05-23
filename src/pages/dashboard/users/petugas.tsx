@@ -172,7 +172,7 @@ function Petugas() {
                 <label className='text-sm'>No HP petugas:
                     <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
                 </label>
-                <label className='text-sm'>Photo petugas: *max 100kb
+                <label className='text-sm'>Photo petugas: *max 5mb
                     {
                         <img
                             // fallback to make sure image can show properly
