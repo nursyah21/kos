@@ -3,7 +3,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { NavLink } from 'react-router';
 import { toast } from 'sonner';
 import useSWR, { mutate } from 'swr';
 import BoxRotate from '../../../components/boxRotate';
@@ -11,23 +10,25 @@ import Modal from '../../../components/modal';
 import Table from '../../../components/table';
 import { db } from '../../../lib/firebase';
 import { $ } from '../../../lib/utils';
-import { schemaPenghuni, TSchemaPenghuni } from '../../../schema';
+import { schemaKos, TSchemaKos } from '../../../schema';
+import { NavLink } from 'react-router';
 import { upload } from '../../../lib/upload';
 
 const fetcher = async () => {
-    const querySnapshot = await getDocs(collection(db, 'penghuni'));
+    const querySnapshot = await getDocs(collection(db, 'kos'));
     return querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data() as TSchemaPenghuni
+        ...doc.data() as TSchemaKos
     }));
 };
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
     const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
-        resolver: yupResolver(schemaPenghuni)
+        resolver: yupResolver(schemaKos)
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const [isUploading, setIsUploading] = useState(false)
+
 
     const total = watch('image')
     useEffect(() => {
@@ -50,74 +51,75 @@ const useHooks = () => {
 
     }, [total])
 
-    const openModal = (data?: TSchemaPenghuni, type: TypeSubmit = 'add') => {
+    const openModal = (data?: TSchemaKos, type: TypeSubmit = 'add') => {
         reset()
         if (data) {
             setValue('id', data.id)
-            setValue('nama', data.nama)
-            setValue('no_hp', data.no_hp)
+            setValue('kos', data.kos)
+            setValue('address', data.address)
             setValue('imageChange', data.image)
             setTypeSubmit(type)
         }
         // @ts-ignore
-        $('#modal_penghuni').showModal()
+        $('#modal_kos').showModal()
     }
 
     const onSubmit = handleSubmit(async (data) => {
         try {
             const newData = {
                 ...data,
-                image: watch('imageChange') ?? '',
+                
+                image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
             }
+
             if (typeSubmit == 'add') {
-                await addDoc(collection(db, 'penghuni'), newData);
-                toast.success('penghuni added!')
+                await addDoc(collection(db, 'kos'), newData);
+                toast.success('kos added!')
             }
             else if (typeSubmit == 'edit') {
-                await updateDoc(doc(db, 'penghuni', data.id!), newData);
-                toast.success('penghuni edited!')
+                await updateDoc(doc(db, 'kos', data.id!), newData);
+                toast.success('kos edited!')
             }
             else if (typeSubmit == 'delete') {
-                await deleteDoc(doc(db, 'penghuni', data.id!));
-                toast.success('penghuni deleted!')
+                await deleteDoc(doc(db, 'kos', data.id!));
+                toast.success('kos deleted!')
             }
         } catch (e) {
-            toast.error(`error ${typeSubmit} penghuni`)
+            toast.error(`error ${typeSubmit} kos`)
         }
-        mutate('penghuni')
+        mutate('kos')
         // @ts-ignore
-        $('#modal_penghuni').close()
+        $('#modal_kos').close()
     })
     return {
         setValue, register, onSubmit, isSubmitting,
-        watch, errors, openModal,
-        typeSubmit, isUploading
+        watch, errors, openModal, isUploading,
+        typeSubmit
     }
 }
 
 
-function Penghuni() {
+function Kos() {
     const { register, onSubmit, isSubmitting,
         watch, openModal, typeSubmit, isUploading
     } = useHooks()
-    const { data, isLoading } = useSWR('penghuni', fetcher)
+
+    const { data, isLoading } = useSWR('kos', fetcher)
 
     if (isLoading) {
         return <div className='center' id='loading'>
             <BoxRotate />
         </div>
     }
-    const imageId = watch('imageChange') || watch('image') || 'default-image-id';
-
 
     return (<>
         <div className="p-4 container">
             <div className='flex flex-col justify-between sticky top-0 py-2 bg-base-100 z-10'>
                 <div className='flex gap-4'>
                     {
-                        [['/dashboard/users/penghuni', 'Penghuni'],
-                        ['/dashboard/users/petugas', 'Petugas']].map((item, id) =>
+                        [['/dashboard/unit/kamar', 'Kamar'],
+                        ['/dashboard/unit/kos', 'Kos']].map((item, id) =>
                             <NavLink key={id} to={item[0]} className={({ isActive }) => isActive ? '' : 'opacity-60'}>
                                 <h2 className="text-2xl font-semibold">{item[1]}</h2>
                             </NavLink>
@@ -125,27 +127,30 @@ function Penghuni() {
                     }
                 </div>
                 <form className='w-full' onSubmit={onSubmit}>
-                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search penghuni...' />
+                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search kos...' />
                 </form>
             </div>
-            <div className='bottom-10 right-10 fixed z-10'>
-                <button className='btn btn-primary'
-                    // @ts-ignore
-                    onClick={openModal}
-                ><Plus />Penghuni</button>
+            <div className='flex bottom-10 right-10 fixed z-10'>
+                <div>
+                    <button className='btn btn-primary'
+                        // @ts-ignore
+                        onClick={openModal}
+                    ><Plus />Kos</button>
+                </div>
             </div>
-            <div className="overflow-x-auto">
-                <Table rows={['#', 'Penghuni', 'No Hp', '']}>
+
+            <div className="overflow-x-auto mt-4">
+                <Table rows={['#', 'Kos', 'Alamat', '']}>
                     {
                         data?.filter(e => {
                             if (!watch('search')) {
                                 return true
                             }
-                            return new RegExp(watch('search')!, 'i').test(e.nama)
+                            return new RegExp(watch('search')!, 'i').test(e.kos)
                         }).map((data, i) => <tr key={i}>
                             <td>{i + 1}</td>
-                            <td>{data.nama}</td>
-                            <td>{data.no_hp}</td>
+                            <td>{data.kos}</td>
+                            <td>{data.address}</td>
                             <td>
                                 <div className="dropdown dropdown-end">
                                     <button id='dropdown' className="p-0"><Ellipsis /></button>
@@ -160,15 +165,15 @@ function Penghuni() {
                 </Table>
             </div>
         </div>
-        <Modal id='modal_penghuni' title={`${typeSubmit} penghuni`}>
+        <Modal id='modal_kos' title={`${typeSubmit} kos`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
-                <label className='text-sm'>Nama penghuni:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('nama')} className="input w-full" type="text" placeholder="nama" />
+                <label className='text-sm'>kos:
+                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('kos')} className="input w-full" type="text" placeholder="kos" />
                 </label>
-                <label className='text-sm'>No HP penghuni:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
+                <label className='text-sm'>Alamat:
+                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('address')} className="input w-full" type="text" placeholder="alamat" />
                 </label>
-                <label className='text-sm'>Photo penghuni: *max 5mb
+                <label className='text-sm'>Photo kos: *max 5mb
                     {
                         <img
                             // fallback to make sure image can show properly
@@ -187,4 +192,4 @@ function Penghuni() {
     </>);
 }
 
-export default Penghuni;
+export default Kos;

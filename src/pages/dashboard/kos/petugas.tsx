@@ -3,7 +3,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { NavLink } from 'react-router';
 import { toast } from 'sonner';
 import useSWR, { mutate } from 'swr';
 import BoxRotate from '../../../components/boxRotate';
@@ -12,10 +11,11 @@ import Table from '../../../components/table';
 import { db } from '../../../lib/firebase';
 import { $ } from '../../../lib/utils';
 import { schemaPenghuni, TSchemaPenghuni } from '../../../schema';
+import { NavLink } from 'react-router';
 import { upload } from '../../../lib/upload';
 
 const fetcher = async () => {
-    const querySnapshot = await getDocs(collection(db, 'penghuni'));
+    const querySnapshot = await getDocs(collection(db, 'petugas'));
     return querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data() as TSchemaPenghuni
@@ -28,6 +28,7 @@ const useHooks = () => {
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const [isUploading, setIsUploading] = useState(false)
+
 
     const total = watch('image')
     useEffect(() => {
@@ -60,56 +61,56 @@ const useHooks = () => {
             setTypeSubmit(type)
         }
         // @ts-ignore
-        $('#modal_penghuni').showModal()
+        $('#modal_petugas').showModal()
     }
 
     const onSubmit = handleSubmit(async (data) => {
         try {
             const newData = {
                 ...data,
-                image: watch('imageChange') ?? '',
+                image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
             }
+
             if (typeSubmit == 'add') {
-                await addDoc(collection(db, 'penghuni'), newData);
-                toast.success('penghuni added!')
+                await addDoc(collection(db, 'petugas'), newData);
+                toast.success('petugas added!')
             }
             else if (typeSubmit == 'edit') {
-                await updateDoc(doc(db, 'penghuni', data.id!), newData);
-                toast.success('penghuni edited!')
+                await updateDoc(doc(db, 'petugas', data.id!), newData);
+                toast.success('petugas edited!')
             }
             else if (typeSubmit == 'delete') {
-                await deleteDoc(doc(db, 'penghuni', data.id!));
-                toast.success('penghuni deleted!')
+                await deleteDoc(doc(db, 'petugas', data.id!));
+                toast.success('petugas deleted!')
             }
         } catch (e) {
-            toast.error(`error ${typeSubmit} penghuni`)
+            toast.error(`error ${typeSubmit} petugas`)
         }
-        mutate('penghuni')
+        mutate('petugas')
         // @ts-ignore
-        $('#modal_penghuni').close()
+        $('#modal_petugas').close()
     })
     return {
         setValue, register, onSubmit, isSubmitting,
-        watch, errors, openModal,
-        typeSubmit, isUploading
+        watch, errors, openModal, isUploading,
+        typeSubmit
     }
 }
 
 
-function Penghuni() {
+function Petugas() {
     const { register, onSubmit, isSubmitting,
         watch, openModal, typeSubmit, isUploading
     } = useHooks()
-    const { data, isLoading } = useSWR('penghuni', fetcher)
+
+    const { data, isLoading } = useSWR('kos', fetcher)
 
     if (isLoading) {
         return <div className='center' id='loading'>
             <BoxRotate />
         </div>
     }
-    const imageId = watch('imageChange') || watch('image') || 'default-image-id';
-
 
     return (<>
         <div className="p-4 container">
@@ -125,17 +126,20 @@ function Penghuni() {
                     }
                 </div>
                 <form className='w-full' onSubmit={onSubmit}>
-                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search penghuni...' />
+                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search petugas...' />
                 </form>
             </div>
-            <div className='bottom-10 right-10 fixed z-10'>
-                <button className='btn btn-primary'
-                    // @ts-ignore
-                    onClick={openModal}
-                ><Plus />Penghuni</button>
+            <div className='flex bottom-10 right-10 fixed z-10'>
+                <div>
+                    <button className='btn btn-primary'
+                        // @ts-ignore
+                        onClick={openModal}
+                    ><Plus />Petugas</button>
+                </div>
             </div>
-            <div className="overflow-x-auto">
-                <Table rows={['#', 'Penghuni', 'No Hp', '']}>
+
+            <div className="overflow-x-auto mt-4">
+                <Table rows={['#', 'Petugas', 'No Hp', '']}>
                     {
                         data?.filter(e => {
                             if (!watch('search')) {
@@ -160,15 +164,15 @@ function Penghuni() {
                 </Table>
             </div>
         </div>
-        <Modal id='modal_penghuni' title={`${typeSubmit} penghuni`}>
+        <Modal id='modal_petugas' title={`${typeSubmit} petugas`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
-                <label className='text-sm'>Nama penghuni:
+                <label className='text-sm'>Nama petugas:
                     <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('nama')} className="input w-full" type="text" placeholder="nama" />
                 </label>
-                <label className='text-sm'>No HP penghuni:
+                <label className='text-sm'>No HP petugas:
                     <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
                 </label>
-                <label className='text-sm'>Photo penghuni: *max 5mb
+                <label className='text-sm'>Photo petugas: *max 100kb
                     {
                         <img
                             // fallback to make sure image can show properly
@@ -181,10 +185,10 @@ function Penghuni() {
                         <input disabled={isUploading || isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>Submit</button>
+                <button className='btn' disabled={isSubmitting} type='submit'>Submit</button>
             </form>
         </Modal>
     </>);
 }
 
-export default Penghuni;
+export default Petugas;

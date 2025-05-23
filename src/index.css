@@ -41,7 +41,7 @@
     @apply flex flex-col h-screen justify-center items-center
 }
 
-input:focus {
+input:focus, select:focus {
     @apply border-0;
 }
 label {

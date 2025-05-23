@@ -185,7 +185,7 @@ function Petugas() {
                         <input disabled={isUploading || isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isSubmitting} type='submit'>Submit</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>Submit</button>
             </form>
         </Modal>
     </>);
