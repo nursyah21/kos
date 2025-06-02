@@ -32,8 +32,8 @@ export type TSchemaKos = yup.InferType<typeof schemaKos>
 export const schemaKamarKos = yup.object().shape({
     id: yup.string(),
     kamar: yup.string().required(),
-    kos: schemaKos,
-    penghuni: schemaPenghuni,
+    kos: yup.string().required(),
+    penghuni: yup.string().required(),
     tgl_masuk: yup.string().required(),
     biaya: yup.string(),
     image: yup.string(),

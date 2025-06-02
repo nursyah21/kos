@@ -1,72 +1,49 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, updateDoc } from '@firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { NavLink } from 'react-router';
 import { toast } from 'sonner';
 import useSWR, { mutate } from 'swr';
 import BoxRotate from '../../../components/boxRotate';
 import Modal from '../../../components/modal';
 import Table from '../../../components/table';
 import { db } from '../../../lib/firebase';
-import { $ } from '../../../lib/utils';
-import { schemaKos, TSchemaKamarKos, TSchemaKos, TSchemaPenghuni } from '../../../schema';
-import { NavLink } from 'react-router';
 import { upload } from '../../../lib/upload';
+import { $ } from '../../../lib/utils';
+import { schemaKamarKos, TSchemaKamarKos, TSchemaKos, TSchemaPenghuni } from '../../../schema';
 const fetcher = async () => {
-    const penghuniSnapshot = await getDocs(collection(db, 'penghuni'));
-    const kosSnapshot = await getDocs(collection(db, 'kos'));
     const kamarSnapshot = await getDocs(collection(db, 'kamar'));
-    const penghuni = penghuniSnapshot.docs.map(doc => ({
+    
+    return kamarSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data() as TSchemaKamarKos
+    }))
+};
+
+const fetcherPenghuni = async () => {
+    const penghuniSnapshot = await getDocs(collection(db, 'penghuni'));
+    
+    return penghuniSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data() as TSchemaPenghuni
     }))
-    const kos = kosSnapshot.docs.map(doc => ({
+};
+
+const fetcherKos = async () => {
+    const kosSnapshot = await getDocs(collection(db, 'kos'));
+    
+    return kosSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data() as TSchemaKos
     }))
-    // const kamar = kamarSnapshot.docs.map(doc => ({
-    //     id: doc.id,
-    //     ...doc.data() as TSchemaKamarKos
-    // }))
-    //    const kamar = await Promise.all(kamarSnapshot.docs.map(async (doc) => {
-    //         const kamarInfo = doc.data() as TSchemaKamarKos;
-
-    //         // Ensure `kos` and `penghuni` are valid Firestore document references
-    //         const kosDoc = kamarInfo.kos ? await getDoc(doc(db, "kos", kamarInfo.kos)) : null;
-    //         const penghuniDoc = kamarInfo.penghuni ? await getDoc(doc(db, "penghuni", kamarInfo.penghuni)) : null;
-
-    //         return {
-    //             id: doc.id,
-    //             ...kamarInfo,
-    //             kos: kosDoc?.exists() ? { id: kosDoc.id, ...kosDoc.data() } : null,
-    //             penghuni: penghuniDoc?.exists() ? { id: penghuniDoc.id, ...penghuniDoc.data() } : null
-    //         };
-    //     })) 
-    const kamar = await Promise.all(kamarSnapshot.docs.map(async doc => {
-        const kamarInfo = doc.data() as TSchemaKamarKos
-        // @ts-ignore
-        const kos = (await getDoc(kamarInfo.kos)).data()
-        // @ts-ignore
-        const penghuni = (await getDoc(kamarInfo.penghuni)).data()
-        return {
-            id: doc.id,
-            ...kamarInfo,
-            kos,
-            penghuni
-        }
-    })) as unknown as TSchemaKamarKos[]
-    console.log('kaaaaaaar=>',{ kamar })
-    return {
-        penghuni,
-        kos,
-        kamar,
-    }
 };
+
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
     const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
-        resolver: yupResolver(schemaKos)
+        resolver: yupResolver(schemaKamarKos)
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const [isUploading, setIsUploading] = useState(false)
@@ -93,62 +70,104 @@ const useHooks = () => {
 
     }, [total])
 
-    const openModal = (data?: TSchemaKos, type: TypeSubmit = 'add') => {
+    const openModal = (data?: TSchemaKamarKos, type: TypeSubmit = 'add') => {
         reset()
         if (data) {
             setValue('id', data.id)
             setValue('kos', data.kos)
-            setValue('address', data.address)
+            setValue('penghuni', data.penghuni)
+            setValue('kamar', data.kamar)
+            setValue('tgl_masuk', data.tgl_masuk)
+            setValue('biaya', data.biaya)
             setValue('imageChange', data.image)
             setTypeSubmit(type)
         }
         // @ts-ignore
-        $('#modal_kos').showModal()
+        $('#modal_kamar').showModal()
     }
 
-    const onSubmit = handleSubmit(async (data) => {
+    const onSubmit = async (e: FormEvent) => {
+        e.preventDefault()
         try {
             const newData = {
-                ...data,
+                kos: watch('kos'),
+                penghuni: watch('penghuni'),
+                kamar: watch('kamar'),
+                biaya: watch('biaya'),
+                tgl_masuk: watch('tgl_masuk'),
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
             }
-
             if (typeSubmit == 'add') {
-                await addDoc(collection(db, 'kos'), newData);
-                toast.success('kos added!')
+                await addDoc(collection(db, 'kamar'), newData);
+                toast.success('kamar added!')
             }
             else if (typeSubmit == 'edit') {
-                await updateDoc(doc(db, 'kos', data.id!), newData);
-                toast.success('kos edited!')
+                await updateDoc(doc(db, 'kamar', watch('id')!), newData);
+                toast.success('kamar edited!')
             }
             else if (typeSubmit == 'delete') {
-                await deleteDoc(doc(db, 'kos', data.id!));
-                toast.success('kos deleted!')
+                await deleteDoc(doc(db, 'kamar', watch('id')!));
+                toast.success('kamar deleted!')
             }
         } catch (e) {
-            toast.error(`error ${typeSubmit} kos`)
+            toast.error(`error ${typeSubmit} kamar`)
         }
-        mutate('kos')
+        mutate('kamar')
         // @ts-ignore
-        $('#modal_kos').close()
-    })
+        $('#modal_kamar').close()
+    }
+
+    // i dont know why this is dont work so for now just keep it
+    // const onSubmit = handleSubmit(async (data) => {
+    //     try {
+    //         const newData = {
+    //             ...data,
+    //             image: watch('imageChange') ?? '/emptyImage.png',
+    //             created_at: serverTimestamp()
+    //         }
+    //         console.log(newData)
+
+    //         if (typeSubmit == 'add') {
+    //             await addDoc(collection(db, 'kos'), newData);
+    //             toast.success('kos added!')
+    //         }
+    //         else if (typeSubmit == 'edit') {
+    //             await updateDoc(doc(db, 'kos', data.id!), newData);
+    //             toast.success('kos edited!')
+    //         }
+    //         else if (typeSubmit == 'delete') {
+    //             await deleteDoc(doc(db, 'kos', data.id!));
+    //             toast.success('kos deleted!')
+    //         }
+    //     } catch (e) {
+    //         toast.error(`error ${typeSubmit} kos`)
+    //     }
+    //     mutate('kos')
+    //     // @ts-ignore
+    //     $('#modal_kamar').close()
+    // })
+
     return {
         setValue, register, onSubmit, isSubmitting,
         watch, errors, openModal, isUploading,
-        typeSubmit
+        typeSubmit, handleSubmit
     }
 }
 
 
 function Kos() {
     const { register, onSubmit, isSubmitting,
-        watch, openModal, typeSubmit, isUploading
+        watch, openModal, typeSubmit, isUploading, handleSubmit
     } = useHooks()
 
-    const { data, isLoading } = useSWR('kamar', fetcher)
 
-    if (isLoading) {
+    const { data, isLoading } = useSWR('kamar', fetcher)
+    const { data:dataKos, isLoading:isLoadingKos } = useSWR('kos', fetcherKos)
+    const { data:dataPenghuni, isLoading:isLoadingPenghuni } = useSWR('penghuni', fetcherPenghuni)
+
+
+    if (isLoading || isLoadingKos || isLoadingPenghuni) {
         return <div className='center' id='loading'>
             <BoxRotate />
         </div>
@@ -168,7 +187,7 @@ function Kos() {
                     }
                 </div>
                 <form className='w-full' onSubmit={onSubmit}>
-                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search kos...' />
+                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search kamar...' />
                 </form>
             </div>
             <div className='flex bottom-10 right-10 fixed z-10'>
@@ -176,23 +195,24 @@ function Kos() {
                     <button className='btn btn-primary'
                         // @ts-ignore
                         onClick={openModal}
-                    ><Plus />Kos</button>
+                    ><Plus />Kamar</button>
                 </div>
             </div>
 
             <div className="overflow-x-auto mt-4">
                 <Table rows={['#', 'kamar', 'Kos', 'Penghuni', 'Tgl Masuk', 'Biaya (Rb)', '']}>
                     {
-                        data?.kamar?.filter(e => {
+                        data?.filter(e => {
                             if (!watch('search')) {
                                 return true
                             }
                             return new RegExp(watch('search')!, 'i').test(e.kamar)
-                        }).map((data, i) => <tr key={i}>
+                        })
+                        .map((data, i) => <tr key={i}>
                             <td>{i + 1}</td>
                             <td>{data.kamar}</td>
-                            <td>{data.kos.kos}</td>
-                            <td>{data.penghuni.nama}</td>
+                            <td>{dataPenghuni?.filter(i=>i.id == data.penghuni).map(e=>e.nama)[0]}</td>
+                            <td>{dataKos?.filter(i=>i.id == data.kos).map(e=>e.kos)[0]}</td>
                             <td>{data.tgl_masuk}</td>
                             <td>{data.biaya}</td>
                             <td>
@@ -200,11 +220,9 @@ function Kos() {
                                     <button id='dropdown' className="p-0"><Ellipsis /></button>
                                     <ul className="border menu dropdown-content bg-base-300  w-48  p-2">
                                         <li><button id='edit' onClick={() =>
-                                            // @ts-ignore
                                             openModal(data, 'edit')}>Edit</button></li>
 
                                         <li><button id='delete' onClick={() =>
-                                            // @ts-ignore
                                             openModal(data, 'delete')}>Delete</button></li>
                                     </ul>
                                 </div>
@@ -214,15 +232,30 @@ function Kos() {
                 </Table>
             </div>
         </div>
-        <Modal id='modal_kos' title={`${typeSubmit} kos`}>
+        <Modal id='modal_kamar' title={`${typeSubmit} kamar`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>kos:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('kos')} className="input w-full" type="text" placeholder="kos" />
+                    <select {...register('kos')} defaultValue={'pilih kos'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                        <option value="pilih kos"disabled>pilih kos</option>
+                        {dataKos?.map(e => (<option key={e.id} value={e.id}>{e.kos} - {e.address}</option>))}
+                    </select>
                 </label>
-                <label className='text-sm'>Alamat:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('address')} className="input w-full" type="text" placeholder="alamat" />
+                <label className='text-sm'>penghuni:
+                    <select {...register('penghuni')} defaultValue={'pilih kamar'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                        <option value="pilih kamar"disabled>pilih kamar</option>
+                        {dataPenghuni?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
+                    </select>
                 </label>
-                <label className='text-sm'>Photo kos: *max 5mb
+                <label className='text-sm'>kamar:
+                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('kamar')} className="input w-full" type="text" placeholder="kamar" required />
+                </label>
+                <label className='text-sm'>Biaya (Rb):
+                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('biaya')} className="input w-full" type="number" placeholder="biaya" required />
+                </label>
+                <label className='text-sm'>Tgl Masuk:
+                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('tgl_masuk')} className="input w-full" type="date" placeholder="biaya" required />
+                </label>
+                <label className='text-sm'>Photo kamar: *max 5mb
                     {
                         <img
                             src={watch('imageChange') || '/emptyImage.png'}
