@@ -1,4 +1,4 @@
-import { collection, getDocs } from "@firebase/firestore";
+import { collection, getDocs, orderBy, query } from "@firebase/firestore";
 import { TSchemaKamarKos, TSchemaKos, TSchemaPenghuni, TSchemaPetugas, TSchemaTransaksi } from "../schema";
 import { db } from "./firebase";
 import useSWR from "swr";
@@ -31,8 +31,9 @@ export const fetcherPetugas = async () => {
 };
 
 export const fetcherTransaksi = async () => {
-    const querySnapshot = await getDocs(collection(db, 'transaksi'));
+    const querySnapshot = await getDocs(query(collection(db, 'transaksi'), orderBy('tgl_bayar', 'desc')));
     return querySnapshot.docs.map(doc => ({
+        id: doc.id,
         ...doc.data() as TSchemaTransaksi
     }));
 };
@@ -49,4 +50,4 @@ export const useFetcherKos = () => useSWR('kos', fetcherKos)
 export const useFetcherKamar = () => useSWR('kamar', fetcherKamar)
 export const useFetcherPenghuni = () => useSWR('penghuni', fetcherPenghuni)
 export const useFetcherPetugas = () => useSWR('petugas', fetcherPetugas)
-export const useFetcherTransaksi = () => useSWR('petugas', fetcherTransaksi)
+export const useFetcherTransaksi = () => useSWR('transaksi', fetcherTransaksi)

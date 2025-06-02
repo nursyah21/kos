@@ -13,12 +13,12 @@ import { useFetcherKamar, useFetcherKos, useFetcherPenghuni } from '../../../lib
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
 import { $ } from '../../../lib/utils';
-import { schemaTransaksi, TSchemaKamarKos } from '../../../schema';
+import { schemaKamarKos, TSchemaKamarKos } from '../../../schema';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
     const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
-        resolver: yupResolver(schemaTransaksi)
+        resolver: yupResolver(schemaKamarKos)
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const [isUploading, setIsUploading] = useState(false)
@@ -61,6 +61,7 @@ const useHooks = () => {
         $('#modal_kamar').showModal()
     }
 
+    // handle submit not work so we just use manual
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault()
         try {
@@ -93,36 +94,6 @@ const useHooks = () => {
         $('#modal_kamar').close()
     }
 
-    // i dont know why this is dont work so for now just keep it
-    // const onSubmit = handleSubmit(async (data) => {
-    //     try {
-    //         const newData = {
-    //             ...data,
-    //             image: watch('imageChange') ?? '/emptyImage.png',
-    //             created_at: serverTimestamp()
-    //         }
-    //         console.log(newData)
-
-    //         if (typeSubmit == 'add') {
-    //             await addDoc(collection(db, 'kos'), newData);
-    //             toast.success('kos added!')
-    //         }
-    //         else if (typeSubmit == 'edit') {
-    //             await updateDoc(doc(db, 'kos', data.id!), newData);
-    //             toast.success('kos edited!')
-    //         }
-    //         else if (typeSubmit == 'delete') {
-    //             await deleteDoc(doc(db, 'kos', data.id!));
-    //             toast.success('kos deleted!')
-    //         }
-    //     } catch (e) {
-    //         toast.error(`error ${typeSubmit} kos`)
-    //     }
-    //     mutate('kos')
-    //     // @ts-ignore
-    //     $('#modal_kamar').close()
-    // })
-
     return {
         setValue, register, onSubmit, isSubmitting,
         watch, errors, openModal, isUploading,
@@ -140,7 +111,6 @@ function Kos() {
     const { data, isLoading } = useFetcherKamar()
     const { data: dataKos, isLoading: isLoadingKos } = useFetcherKos()
     const { data: dataPenghuni, isLoading: isLoadingPenghuni } = useFetcherPenghuni()
-
 
     if (isLoading || isLoadingKos || isLoadingPenghuni) {
         return <div className='center' id='loading'>
@@ -186,8 +156,8 @@ function Kos() {
                             .map((data, i) => <tr key={i}>
                                 <td>{i + 1}</td>
                                 <td>{data.kamar}</td>
-                                <td>{dataPenghuni?.filter(i => i.id == data.penghuni).map(e => e.nama)[0]}</td>
-                                <td>{dataKos?.filter(i => i.id == data.kos).map(e => e.kos)[0]}</td>
+                                <td>{dataPenghuni?.filter(i => i.id == data.penghuni)[0]?.nama}</td>
+                                <td>{dataKos?.filter(i => i.id == data.kos)[0]?.kos}</td>
                                 <td>{data.tgl_masuk}</td>
                                 <td>{data.biaya}</td>
                                 <td>
@@ -216,8 +186,8 @@ function Kos() {
                     </select>
                 </label>
                 <label className='text-sm'>penghuni:
-                    <select {...register('penghuni')} defaultValue={'pilih kamar'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
-                        <option value="pilih kamar" disabled>pilih kamar</option>
+                    <select {...register('penghuni')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full">
+                        <option value="" >pilih penghuni</option>
                         {dataPenghuni?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
                     </select>
                 </label>
