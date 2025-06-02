@@ -3,21 +3,14 @@ import BoxRotate from '../../components/boxRotate';
 import Modal from '../../components/modal';
 import Table from '../../components/table';
 import { $ } from '../../lib/utils';
-import { schemaPenghuni, TSchemaPenghuni } from '../../schema';
+import { schemaPenghuni, TSchemaKamarKos, TSchemaPenghuni, TSchemaTransaksi } from '../../schema';
 import { addDoc, collection, getDocs, serverTimestamp } from '@firebase/firestore';
 import { db } from '../../lib/firebase';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import useSWR, { mutate } from 'swr';
-
-const fetcher = async () => {
-    const querySnapshot = await getDocs(collection(db, 'penghuni'));
-    return querySnapshot.docs.map(doc => ({
-        ...doc.data() as TSchemaPenghuni
-    }));
-};
-
+import { mutate } from 'swr';
+import { useFetcherTransaksi } from '../../lib/fetcher';
 
 function useHooks() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
@@ -40,28 +33,28 @@ function useHooks() {
 
     const openModal = () => {
         // @ts-ignore
-        $('modal_penghuni')?.showModal()
-    } 
-
-    const { data, isLoading } = useSWR<TSchemaPenghuni[]>("transaksi", fetcher)
+        $('modal_transaksi')?.showModal()
+    }
 
     return {
         register, onSubmit, errors, isSubmitting,
-        data, isLoading, openModal
+        openModal
     };
 }
 
 function Transaksi() {
     const { register, onSubmit, isSubmitting,
-        data, isLoading, openModal
+        openModal
     } = useHooks()
+
+    const { data, isLoading } = useFetcherTransaksi()
+
 
     if (isLoading) {
         return <div className='center'>
             <BoxRotate />
         </div>
     }
-    console.dir(data)
 
     return (<>
         <div className="p-4 container">
@@ -72,15 +65,11 @@ function Transaksi() {
                 ><Plus /> Penghuni</button>
             </div>
             <div className="overflow-x-auto mt-4">
-                <Table rows={['#', 'Nama', 'No HP', 'Tgl Bayar', 'Total (Rb)', 'Petugas', '']}>
+                <Table rows={['#', 'Penghuni', 'Tgl Bayar', 'Total (Rb)', 'Petugas', '']}>
                     {
                         data?.map((data, i) => <tr key={i}>
                             <td>{i + 1}</td>
-                            <td>{data.nama}</td>
-                            <td>{data.no_hp}</td>
-                            {/* <td>{data.tgl_bayar}</td>
-                            <td>{Number(data.total).toLocaleString()}</td>
-                            <td>{data.petugas}</td> */}
+                            <td>{data.penghuni}</td>
                             <td>
                                 <div className="dropdown dropdown-end">
                                     <button className=" p-0"><Ellipsis /></button>
@@ -94,13 +83,13 @@ function Transaksi() {
                                             openModal(data, 'delete')}>Delete</button></li>
                                     </ul>
                                 </div>
-                            </td> 
+                            </td>
                         </tr>)
                     }
                 </Table>
             </div>
         </div>
-        <Modal id='modal_penghuni' title='Add Penghuni'>
+        <Modal id='modal_transaksi' title='Add Penghuni'>
             <form method='dialog' className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>Nama:
                     <input {...register('nama')} className="input w-full" type="text" placeholder="nama" required />

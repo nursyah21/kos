@@ -17,6 +17,10 @@ export const schemaPenghuni = yup.object().shape({
 
 export type TSchemaPenghuni = yup.InferType<typeof schemaPenghuni>
 
+export const schemaPetugas = schemaPenghuni
+
+export type TSchemaPetugas = yup.InferType<typeof schemaPetugas>
+
 export const schemaKos = yup.object().shape({
     id: yup.string(),
     kos: yup.string().required(),
@@ -43,3 +47,16 @@ export const schemaKamarKos = yup.object().shape({
 
 export type TSchemaKamarKos = yup.InferType<typeof schemaKamarKos>
 
+export const schemaTransaksi = yup.object().shape({
+    id: yup.string(),
+    kamar: yup.string().required(),
+    kos: yup.string().required(),
+    penghuni: yup.string().required(),
+    tgl_masuk: yup.string().required(),
+    biaya: yup.string(),
+    image: yup.string(),
+    imageChange: yup.string(),
+    search: yup.string()
+})
+
+export type TSchemaTransaksi = yup.InferType<typeof schemaKamarKos>

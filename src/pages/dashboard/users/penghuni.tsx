@@ -1,26 +1,20 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from '@firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { NavLink } from 'react-router';
 import { toast } from 'sonner';
-import useSWR, { mutate } from 'swr';
+import { mutate } from 'swr';
 import BoxRotate from '../../../components/boxRotate';
 import Modal from '../../../components/modal';
 import Table from '../../../components/table';
+import { useFetcherPenghuni } from '../../../lib/fetcher';
 import { db } from '../../../lib/firebase';
+import { upload } from '../../../lib/upload';
 import { $ } from '../../../lib/utils';
 import { schemaPenghuni, TSchemaPenghuni } from '../../../schema';
-import { upload } from '../../../lib/upload';
 
-const fetcher = async () => {
-    const querySnapshot = await getDocs(collection(db, 'penghuni'));
-    return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data() as TSchemaPenghuni
-    }));
-};
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
     const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
@@ -101,7 +95,7 @@ function Penghuni() {
     const { register, onSubmit, isSubmitting,
         watch, openModal, typeSubmit, isUploading
     } = useHooks()
-    const { data, isLoading } = useSWR('penghuni', fetcher)
+    const { data, isLoading } = useFetcherPenghuni()
 
     if (isLoading) {
         return <div className='center' id='loading'>

@@ -1,49 +1,24 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from '@firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { NavLink } from 'react-router';
 import { toast } from 'sonner';
-import useSWR, { mutate } from 'swr';
+import { mutate } from 'swr';
 import BoxRotate from '../../../components/boxRotate';
 import Modal from '../../../components/modal';
 import Table from '../../../components/table';
+import { useFetcherKamar, useFetcherKos, useFetcherPenghuni } from '../../../lib/fetcher';
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
 import { $ } from '../../../lib/utils';
-import { schemaKamarKos, TSchemaKamarKos, TSchemaKos, TSchemaPenghuni } from '../../../schema';
-const fetcher = async () => {
-    const kamarSnapshot = await getDocs(collection(db, 'kamar'));
-    
-    return kamarSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data() as TSchemaKamarKos
-    }))
-};
-
-const fetcherPenghuni = async () => {
-    const penghuniSnapshot = await getDocs(collection(db, 'penghuni'));
-    
-    return penghuniSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data() as TSchemaPenghuni
-    }))
-};
-
-const fetcherKos = async () => {
-    const kosSnapshot = await getDocs(collection(db, 'kos'));
-    
-    return kosSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data() as TSchemaKos
-    }))
-};
+import { schemaTransaksi, TSchemaKamarKos } from '../../../schema';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
     const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
-        resolver: yupResolver(schemaKamarKos)
+        resolver: yupResolver(schemaTransaksi)
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const [isUploading, setIsUploading] = useState(false)
@@ -158,13 +133,13 @@ const useHooks = () => {
 
 function Kos() {
     const { register, onSubmit, isSubmitting,
-        watch, openModal, typeSubmit, isUploading, handleSubmit
+        watch, openModal, typeSubmit, isUploading
     } = useHooks()
 
 
-    const { data, isLoading } = useSWR('kamar', fetcher)
-    const { data:dataKos, isLoading:isLoadingKos } = useSWR('kos', fetcherKos)
-    const { data:dataPenghuni, isLoading:isLoadingPenghuni } = useSWR('penghuni', fetcherPenghuni)
+    const { data, isLoading } = useFetcherKamar()
+    const { data: dataKos, isLoading: isLoadingKos } = useFetcherKos()
+    const { data: dataPenghuni, isLoading: isLoadingPenghuni } = useFetcherPenghuni()
 
 
     if (isLoading || isLoadingKos || isLoadingPenghuni) {
@@ -208,26 +183,26 @@ function Kos() {
                             }
                             return new RegExp(watch('search')!, 'i').test(e.kamar)
                         })
-                        .map((data, i) => <tr key={i}>
-                            <td>{i + 1}</td>
-                            <td>{data.kamar}</td>
-                            <td>{dataPenghuni?.filter(i=>i.id == data.penghuni).map(e=>e.nama)[0]}</td>
-                            <td>{dataKos?.filter(i=>i.id == data.kos).map(e=>e.kos)[0]}</td>
-                            <td>{data.tgl_masuk}</td>
-                            <td>{data.biaya}</td>
-                            <td>
-                                <div className="dropdown dropdown-end">
-                                    <button id='dropdown' className="p-0"><Ellipsis /></button>
-                                    <ul className="border menu dropdown-content bg-base-300  w-48  p-2">
-                                        <li><button id='edit' onClick={() =>
-                                            openModal(data, 'edit')}>Edit</button></li>
+                            .map((data, i) => <tr key={i}>
+                                <td>{i + 1}</td>
+                                <td>{data.kamar}</td>
+                                <td>{dataPenghuni?.filter(i => i.id == data.penghuni).map(e => e.nama)[0]}</td>
+                                <td>{dataKos?.filter(i => i.id == data.kos).map(e => e.kos)[0]}</td>
+                                <td>{data.tgl_masuk}</td>
+                                <td>{data.biaya}</td>
+                                <td>
+                                    <div className="dropdown dropdown-end">
+                                        <button id='dropdown' className="p-0"><Ellipsis /></button>
+                                        <ul className="border menu dropdown-content bg-base-300  w-48  p-2">
+                                            <li><button id='edit' onClick={() =>
+                                                openModal(data, 'edit')}>Edit</button></li>
 
-                                        <li><button id='delete' onClick={() =>
-                                            openModal(data, 'delete')}>Delete</button></li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>)
+                                            <li><button id='delete' onClick={() =>
+                                                openModal(data, 'delete')}>Delete</button></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>)
                     }
                 </Table>
             </div>
@@ -236,13 +211,13 @@ function Kos() {
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>kos:
                     <select {...register('kos')} defaultValue={'pilih kos'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
-                        <option value="pilih kos"disabled>pilih kos</option>
+                        <option value="pilih kos" disabled>pilih kos</option>
                         {dataKos?.map(e => (<option key={e.id} value={e.id}>{e.kos} - {e.address}</option>))}
                     </select>
                 </label>
                 <label className='text-sm'>penghuni:
                     <select {...register('penghuni')} defaultValue={'pilih kamar'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
-                        <option value="pilih kamar"disabled>pilih kamar</option>
+                        <option value="pilih kamar" disabled>pilih kamar</option>
                         {dataPenghuni?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
                     </select>
                 </label>
