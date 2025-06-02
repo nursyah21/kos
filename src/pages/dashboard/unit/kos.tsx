@@ -68,7 +68,6 @@ const useHooks = () => {
         try {
             const newData = {
                 ...data,
-                
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
             }
