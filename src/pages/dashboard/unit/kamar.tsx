@@ -86,8 +86,9 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'kamar', watch('id')!));
                 toast.success('kamar deleted!')
             }
-        } catch (e) {
+        } catch (err) {
             toast.error(`error ${typeSubmit} kamar`)
+            console.log(err)
         }
         mutate('kamar')
         // @ts-ignore
@@ -156,8 +157,8 @@ function Kos() {
                             .map((data, i) => <tr key={i}>
                                 <td>{i + 1}</td>
                                 <td>{data.kamar}</td>
-                                <td>{dataPenghuni?.filter(i => i.id == data.penghuni)[0]?.nama}</td>
                                 <td>{dataKos?.filter(i => i.id == data.kos)[0]?.kos}</td>
+                                <td>{dataPenghuni?.filter(i => i.id == data.penghuni)[0]?.nama}</td>
                                 <td>{data.tgl_masuk}</td>
                                 <td>{data.biaya}</td>
                                 <td>
@@ -198,7 +199,7 @@ function Kos() {
                     <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('biaya')} className="input w-full" type="number" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Tgl Masuk:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('tgl_masuk')} className="input w-full" type="date" placeholder="biaya" required />
+                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('tgl_masuk')} className="input w-full" type="date" placeholder="biaya" />
                 </label>
                 <label className='text-sm'>Photo kamar: *max 5mb
                     {

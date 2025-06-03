@@ -1,6 +1,6 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import BoxRotate from '../../components/boxRotate';
 import { useFetcherKamar, useFetcherTransaksi } from '../../lib/fetcher';
+import BoxRotate from '../../components/boxRotate';
 
 function useHooks() {
     const { data: dataTransaksi, isLoading: isLoadingTransaksi } = useFetcherTransaksi();
@@ -22,7 +22,6 @@ function useHooks() {
 
         dataTransaksi: transaksi?.reduce((acc, { day }) => {
             const existing = acc.find(i => i.day === day)
-            console.log(day, existing)
             existing
                 ? existing.totalTransaksi += 1
                 : acc.push({ day, totalTransaksi: 1 })
@@ -39,7 +38,6 @@ function useHooks() {
         }, [{ day: 0, totalPendapatan: 0 }])
             .filter(e => e.day != 0),
     }
-    console.log(data)
     const isLoading = isLoadingTransaksi || isLoadingKamar
 
     return { data, isLoading, bulan }
@@ -47,8 +45,6 @@ function useHooks() {
 
 function DashboardIndex() {
     const { isLoading, bulan, data } = useHooks()
-
-    console.log(data)
 
     if (isLoading) {
         return <div className='center'>
@@ -81,7 +77,7 @@ function DashboardIndex() {
                         <Line type="monotone" dataKey="totalTransaksi" stroke="#8884d8" />
                         <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
                         <XAxis dataKey="day" />
-                        <YAxis   />
+                        <YAxis />
                         <Tooltip contentStyle={{ color: 'black' }} formatter={e => e.toLocaleString()} />
                     </LineChart>
                 </ResponsiveContainer>

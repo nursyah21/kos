@@ -25,8 +25,8 @@ test('crud kos', async ({ page }) => {
     await page.click('button[type="submit"]')
 
     // update
-    await page.locator('tr', { hasText: /kos1/i }).locator('button[id="dropdown"]').click()
-    await page.locator('tr', { hasText: /kos1/i }).locator('button[id="edit"]').click()
+    await page.locator('tr', { hasText: /kos1/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /kos1/i }).first().locator('button[id="edit"]').click()
     await expect(page.locator('input[name="kos"]')).toHaveValue('kos1')
     await page.locator('input[name="kos"]').fill('kos2')
 
@@ -37,8 +37,8 @@ test('crud kos', async ({ page }) => {
     await page.click('button[type="submit"]')
 
     // delete
-    await page.locator('tr', { hasText: /kos2/i }).locator('button[id="dropdown"]').click()
-    await page.locator('tr', { hasText: /kos2/i }).locator('button[id="delete"]').click()
+    await page.locator('tr', { hasText: /kos2/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /kos2/i }).first().locator('button[id="delete"]').click()
     
     await expect(page.locator('input[name="kos"]')).toHaveValue('kos2')
     await expect(page.locator('input[name="address"]')).toHaveValue('alamat2')

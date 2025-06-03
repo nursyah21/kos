@@ -173,9 +173,9 @@ function Transaksi() {
                 <select {...register('kamar')} defaultValue={'pilih kamar'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
                         <option value="pilih kamar" disabled>pilih kamar</option>
                         {dataKamar
-                        ?.filter(e=>e.penghuni)
+                        ?.filter(e=>  dataPenghuni?.filter(i=>i.id == e.penghuni).length )
                         ?.map(e => (<option key={e.id} value={e.id}>{e.kamar} - {
-                            dataKos?.filter(i => i.id == e.kos)[0].kos
+                            dataKos?.filter(i => i.id == e.kos)[0]?.kos
                         }</option>))}
                     </select>
                 </label>

@@ -38,6 +38,7 @@ export default defineConfig({
           ...createPageChunksFromDir('./src/pages/dashboard'),
           firebase: ['@firebase/app', '@firebase/auth'],
           firestore: ['@firebase/firestore'],
+          recharts: ['recharts'],
         }
       }
     }

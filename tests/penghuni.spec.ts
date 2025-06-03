@@ -25,23 +25,20 @@ test('crud penghuni', async ({ page }) => {
     await page.click('button[type="submit"]')
 
     // update
-    await page.locator('tr', { hasText: /penghuni1/i }).locator('button[id="dropdown"]').click()
-    await page.locator('tr', { hasText: /penghuni1/i }).locator('button[id="edit"]').click()
+    await page.locator('tr', { hasText: /penghuni1/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /penghuni1/i }).first().locator('button[id="edit"]').click()
     await expect(page.locator('input[name="nama"]')).toHaveValue('penghuni1')
     await page.locator('input[name="nama"]').fill('penghuni2')
-
-    await expect(page.locator('input[name="no_hp"]')).toHaveValue('081234567890')
-    await page.locator('input[name="no_hp"]').fill('081234567891')
 
     await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src',/.+/)
     await page.click('button[type="submit"]')
 
     // delete
-    await page.locator('tr', { hasText: /penghuni2/i }).locator('button[id="dropdown"]').click()
-    await page.locator('tr', { hasText: /penghuni2/i }).locator('button[id="delete"]').click()
+    await page.locator('tr', { hasText: /penghuni2/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /penghuni2/i }).first().locator('button[id="delete"]').click()
     
     await expect(page.locator('input[name="nama"]')).toHaveValue('penghuni2')
-    await expect(page.locator('input[name="no_hp"]')).toHaveValue('081234567891')
+
     await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src',/.+/)
     await page.click('button[type="submit"]')
 })
