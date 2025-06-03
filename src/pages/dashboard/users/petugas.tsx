@@ -133,7 +133,7 @@ function Petugas() {
                 </div>
             </div>
 
-            <div className="overflow-x-auto mt-4">
+            <div className="overflow-x-auto">
                 <Table rows={['#', 'Petugas', 'No Hp', '']}>
                     {
                         data?.filter(e => {
