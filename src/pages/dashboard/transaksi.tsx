@@ -126,6 +126,9 @@ function Transaksi() {
                 <div className='flex gap-4'>
                     <h2 className="text-2xl font-semibold">Transaksi</h2>
                 </div>
+                <form className='w-full' onSubmit={onSubmit}>
+                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search transaksi penghuni...' />
+                </form>
             </div>
             <div className='flex bottom-10 right-10 fixed z-10'>
                 <div>
@@ -140,16 +143,25 @@ function Transaksi() {
                 <Table rows={['#', 'Penghuni', 'Tgl Bayar', 'Biaya (Rb)', 'Petugas', '']}>
                     {
                         // for now we dont use search function
-                        data?.map((data, i) => <tr key={i}>
+                        data?.filter(e => {
+                            if (!watch('search')) {
+                                return true
+                            }
+                            const penghuni = dataPenghuni?.filter(j =>
+                                j.id == dataKamar?.filter(i => i.id == e.kamar)[0].penghuni
+                            )[0].nama!
+                            return new RegExp(watch('search')!, 'i').test(penghuni)
+                        })
+                            ?.map((data, i) => <tr key={i}>
                                 <td>{i + 1}</td>
                                 <td>{
-                                    dataPenghuni?.filter(e=>
+                                    dataPenghuni?.filter(e =>
                                         e.id == dataKamar?.filter(e => e.id == data.kamar)[0]?.penghuni
                                     )[0]?.nama
                                 }</td>
                                 <td>{data.tgl_bayar}</td>
                                 <td>{dataKamar?.filter(e => e.id == data.kamar)[0]?.biaya}</td>
-                                <td>{dataPetugas?.filter(e =>e.id == data.petugas)[0]?.nama}</td>
+                                <td>{dataPetugas?.filter(e => e.id == data.petugas)[0]?.nama}</td>
                                 <td>
                                     <div className="dropdown dropdown-end">
                                         <button id='dropdown' className="p-0"><Ellipsis /></button>
@@ -170,13 +182,13 @@ function Transaksi() {
         <Modal id='modal_transaksi' title={`${typeSubmit} transaksi`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>kamar:
-                <select {...register('kamar')} defaultValue={'pilih kamar'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                    <select {...register('kamar')} defaultValue={'pilih kamar'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
                         <option value="pilih kamar" disabled>pilih kamar</option>
                         {dataKamar
-                        ?.filter(e=>  dataPenghuni?.filter(i=>i.id == e.penghuni).length )
-                        ?.map(e => (<option key={e.id} value={e.id}>{e.kamar} - {
-                            dataKos?.filter(i => i.id == e.kos)[0]?.kos
-                        }</option>))}
+                            ?.filter(e => dataPenghuni?.filter(i => i.id == e.penghuni).length)
+                            ?.map(e => (<option key={e.id} value={e.id}>{e.kamar} - {
+                                dataKos?.filter(i => i.id == e.kos)[0]?.kos
+                            }</option>))}
                     </select>
                 </label>
                 <label className='text-sm'>penghuni:
@@ -192,7 +204,7 @@ function Transaksi() {
                     } disabled className="input w-full" type="number" placeholder="biaya" required />
                 </label>
                 <label {...register('tgl_masuk')} className='text-sm'>Tgl Masuk:
-                    <input  value={
+                    <input value={
                         dataKamar?.filter(e => e.id == watch('kamar')).map(e => e.tgl_masuk)[0]
                     } disabled className="input w-full" type="date" required />
                 </label>
