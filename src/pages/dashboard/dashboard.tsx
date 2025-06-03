@@ -13,7 +13,7 @@ function Dashboard() {
                     ['/dashboard/transaksi', <ArrowLeftRight />],
                     ['/dashboard/unit', <Blinds />, true],
                     ['/dashboard/users', <UsersRound />, true]].map((item, id) =>
-                        <NavLink key={id} end={!item[2]} to={item[0]}>
+                        <NavLink key={id} end={!item[2]} to={item[0].toString()}>
                             {({ isActive }) => <div className={!isActive ? 'text-gray-600' : ''}>
                                 {item[1]}
                             </div>

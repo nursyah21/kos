@@ -144,12 +144,12 @@ function Transaksi() {
                                 <td>{i + 1}</td>
                                 <td>{
                                     dataPenghuni?.filter(e=>
-                                        e.id == dataKamar?.filter(e => e.id == data.kamar)[0].penghuni
+                                        e.id == dataKamar?.filter(e => e.id == data.kamar)[0]?.penghuni
                                     )[0]?.nama
                                 }</td>
                                 <td>{data.tgl_bayar}</td>
-                                <td>{dataKamar?.filter(e => e.id == data.kamar)[0].biaya}</td>
-                                <td>{dataPetugas?.filter(e =>e.id == data.petugas)[0].nama}</td>
+                                <td>{dataKamar?.filter(e => e.id == data.kamar)[0]?.biaya}</td>
+                                <td>{dataPetugas?.filter(e =>e.id == data.petugas)[0]?.nama}</td>
                                 <td>
                                     <div className="dropdown dropdown-end">
                                         <button id='dropdown' className="p-0"><Ellipsis /></button>
@@ -180,24 +180,24 @@ function Transaksi() {
                     </select>
                 </label>
                 <label className='text-sm'>penghuni:
-                    <input value={
+                    <input {...register('penghuni')} value={
                         dataPenghuni?.filter(e =>
                             e.id == dataKamar?.filter(e => e.id == watch('kamar')).map(e => e.penghuni)[0]
                         ).map(e => `${e.nama} - ${e.no_hp}`)
                     } disabled className="input w-full" type="text" placeholder="penghuni" required />
                 </label>
                 <label className='text-sm'>Biaya (Rb):
-                    <input value={
+                    <input {...register('biaya')} value={
                         dataKamar?.filter(e => e.id == watch('kamar')).map(e => e.biaya)[0]
                     } disabled className="input w-full" type="number" placeholder="biaya" required />
                 </label>
-                <label className='text-sm'>Tgl Masuk:
-                    <input value={
+                <label {...register('tgl_masuk')} className='text-sm'>Tgl Masuk:
+                    <input  value={
                         dataKamar?.filter(e => e.id == watch('kamar')).map(e => e.tgl_masuk)[0]
                     } disabled className="input w-full" type="date" required />
                 </label>
                 <label className='text-sm'>Tgl Bayar:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('tgl_bayar')} className="input w-full" type="date" placeholder="biaya" required />
+                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'delete'} {...register('tgl_bayar')} className="input w-full" type="date" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Petugas:
                     <select {...register('petugas')} defaultValue={'pilih petugas'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>

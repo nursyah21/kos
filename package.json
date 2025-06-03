@@ -11,13 +11,14 @@
     "preview:no-out": "serve ./dist > nul 2>&1",
     "test:rebuild": "yarn build && playwright test --headed",
     "test": "playwright test --headed",
+    "test:headless": "playwright test",
     "test:ui": "playwright test --ui",
     "loadtest:prod": "autocannon -c 200 http://localhost:3333",
     "loadtest:preview": "autocannon -c 200 http://localhost:3000",
     "prod:up": "docker compose up -d",
     "prod:rebuild": "docker compose up -d --build",
     "prod:down": "docker compose down",
-    "deploy": "surge --domain https://pondokjaya.surge.sh dist/"
+    "deploy": "surge --domain https://demo-kos.surge.sh dist/"
   },
   "dependencies": {
     "@firebase/app": "^0.12.1",
@@ -56,6 +57,7 @@
     "globals": "^16.0.0",
     "serve": "^14.2.4",
     "surge": "^0.24.6",
+    "typescript": "^5.8.3",
     "vite": "^6.3.5"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
