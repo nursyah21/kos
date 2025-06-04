@@ -3,7 +3,7 @@
 management system boarding house create with react and firebase
 
 ## check demo web
-[https://demo-kos.surge.sh](https://demo-kos.surge.sh)
+[https://demo-kos.nurs.my.id](https://demo-kos.nurs.my.id)
 
 ## detail description
 

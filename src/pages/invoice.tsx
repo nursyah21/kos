@@ -14,10 +14,10 @@ const useHooks = () => {
         ['kos', dataFetching?.kos],
         ['kamar', dataFetching?.kamar],
         ['tgl bayar', dataFetching?.tgl_bayar],
-        ['biaya', dataFetching?.biaya],
+        ['biaya', `Rp${(dataFetching?.biaya!*1000).toLocaleString()}`],
     ]
 
-    return { data, isLoading, }
+    return { data, isLoading }
 }
 
 function Invoice() {
