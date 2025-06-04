@@ -8,12 +8,17 @@ management system boarding house build with react and firebase
 
 ## screenshot
 
+<details>
+<summary>show all screenshot</summary>
+    
 ![image](screenshots/login.png)
 ![image](screenshots/dashboard.png)
 ![image](screenshots/transaksi.png)
 ![image](screenshots/invoice.png)
 ![image](screenshots/kamar-kos.png)
 ![image](screenshots/penghuni-petugas.png)
+
+</details>
 
 ## tech stack
 
@@ -85,7 +90,7 @@ in folder `api-upload`
 yarn deploy
 ```
 
-**seeding data**
+## Seed
 
 in root folder
 ```bash
@@ -119,11 +124,6 @@ yarn test
 **build and up**
 ```bash
 yarn prod:up
-```
-
-**load testing**
-```bash
-yarn loadtest:prod
 ```
 
 **stop docker**
