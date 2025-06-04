@@ -10,9 +10,9 @@
     "preview": "serve -s ./dist",
     "preview:no-out": "serve -s ./dist > nul 2>&1",
     "test:rebuild": "yarn build && playwright test --headed",
-    "seed": "tsx ./src/db/seeder.ts",
-    "seed:user": "tsx ./src/db/seedUser.ts",
-    "drop": "tsx ./src/db/drop.ts",
+    "seed": "tsx ./config/db/seeder.ts",
+    "seed:user": "tsx ./config/db/seedUser.ts",
+    "drop": "tsx ./config/db/drop.ts",
     "test": "playwright test --headed",
     "test:headless": "playwright test",
     "test:ui": "playwright test --ui",
@@ -20,8 +20,7 @@
     "loadtest:preview": "autocannon -c 200 http://localhost:3000",
     "prod:up": "docker compose up -d",
     "prod:rebuild": "docker compose up -d --build",
-    "prod:down": "docker compose down",
-    "deploy": "surge --domain https://demo-kos.surge.sh dist/"
+    "prod:down": "docker compose down"
   },
   "dependencies": {
     "@firebase/app": "^0.12.1",

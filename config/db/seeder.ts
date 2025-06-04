@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import admin from 'firebase-admin';
 import { db } from './firebase';
-import type { TSchemaKamarKos } from '../schema';
+import type { TSchemaKamarKos } from '../../src/schema';
 
 console.log('generate fake data...')
 const dataPenghuni = Array.from({ length: 10 }, () => ({
