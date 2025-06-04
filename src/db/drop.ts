@@ -1,4 +1,4 @@
-import { db } from "./db"
+import { db } from "./firebase"
 
 // firestore doesnt support to delete all, like drop table
 // so you must delete one by one. 

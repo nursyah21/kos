@@ -4,6 +4,7 @@ import { Ellipsis, Plus } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 import BoxRotate from '../../components/boxRotate';
@@ -23,9 +24,6 @@ const useHooks = () => {
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const [isUploading, setIsUploading] = useState(false)
-
-
-
 
     const total = watch('image')
     useEffect(() => {
@@ -70,6 +68,7 @@ const useHooks = () => {
         try {
             const newData = {
                 kamar: watch('kamar'),
+                biaya: dataKamar?.filter(e => e.id == watch('kamar'))[0].biaya,
                 petugas: watch('petugas'),
                 tgl_bayar: watch('tgl_bayar'),
                 image: watch('imageChange') ?? '/emptyImage.png',
@@ -87,7 +86,8 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'transaksi', watch('id')!));
                 toast.success('transaksi deleted!')
             }
-        } catch (e) {
+        } catch (err) {
+            console.log(err)
             toast.error(`error ${typeSubmit} transaksi`)
         }
         mutate('transaksi')
@@ -95,32 +95,59 @@ const useHooks = () => {
         $('#modal_transaksi').close()
     }
 
-
-    return {
-        setValue, register, onSubmit, isSubmitting,
-        watch, errors, openModal, isUploading,
-        typeSubmit, handleSubmit
-    }
-}
-
-
-function Transaksi() {
-    const { register, onSubmit, isSubmitting,
-        watch, openModal, typeSubmit, isUploading
-    } = useHooks()
-
-    const { data, isLoading } = useFetcherTransaksi()
-    const { data: dataKamar, isLoading: isLoadingKamar } = useFetcherKamar()
+    const { data: _data, isLoading: _isLoading } = useFetcherTransaksi()
+    const { data: _dataKamar, isLoading: isLoadingKamar } = useFetcherKamar()
     const { data: dataKos, isLoading: isLoadingKos } = useFetcherKos()
     const { data: dataPenghuni, isLoading: isLoadingPenghuni } = useFetcherPenghuni()
     const { data: dataPetugas, isLoading: isLoadingPetugas } = useFetcherPetugas()
 
+    const isLoading = _isLoading || isLoadingKamar || isLoadingPenghuni || isLoadingKos || isLoadingPetugas
 
-    if (isLoading || isLoadingKos || isLoadingPenghuni || isLoadingKamar || isLoadingPetugas) {
+    const data = _data?.map(e => {
+        const kamar = _dataKamar?.filter(i => i.id == e.kamar)[0]
+        const kos = dataKos?.filter(i => i.id == kamar?.kos)[0]
+        const penghuni = dataPenghuni?.filter(i => i.id == kamar?.penghuni)[0]
+        const petugas = dataPetugas?.filter(i => i.id == e.petugas)[0]
+        return {
+            ...e,
+            _kamar: `${kamar?.kamar} - ${kos?.kos}`,
+            _penghuni: penghuni?.nama,
+            _petugas: petugas?.nama
+        }
+    })
+
+    const dataKamar = _dataKamar
+        ?.filter(e =>
+            dataPenghuni?.filter(i => i.id == e.penghuni).length)
+        ?.map(e => ({
+            id: e.id,
+            data: `${e.kamar} - ${dataKos?.filter(i => i.id == e.kos)[0]?.kos}`,
+            biaya: e.biaya,
+            tgl_masuk: e.tgl_masuk,
+            penghuni: dataPenghuni?.filter(i => i.id == e.penghuni).map(j => `${j.nama} - ${j.no_hp}`)[0]
+        }))
+
+    return {
+        setValue, register, onSubmit, isSubmitting,
+        watch, errors, openModal, isUploading,
+        typeSubmit, handleSubmit, isLoading, dataKamar,
+        data, dataPetugas
+    }
+}
+
+function Transaksi() {
+    const { register, onSubmit, isSubmitting,
+        watch, openModal, typeSubmit, isUploading, isLoading,
+        data, dataKamar, dataPetugas
+    } = useHooks()
+
+    if (isLoading) {
         return <div className='center' id='loading'>
             <BoxRotate />
         </div>
     }
+
+
 
     return (<>
         <div className="p-4 container">
@@ -142,28 +169,22 @@ function Transaksi() {
             </div>
 
             <div className="overflow-x-auto mt-4">
-                <Table rows={['#', 'Penghuni', 'Tgl Bayar', 'Biaya (Rb)', 'Petugas', '']}>
+                <Table rows={['#', 'Penghuni', 'Kamar', 'Tgl Bayar', 'Biaya (Rb)', 'Petugas', '']}>
                     {
-                        // for now we dont use search function
                         data?.filter(e => {
                             if (!watch('search')) {
                                 return true
                             }
-                            const penghuni = dataPenghuni?.filter(j =>
-                                j.id == dataKamar?.filter(i => i.id == e.kamar)[0].penghuni
-                            )[0].nama!
-                            return new RegExp(watch('search')!, 'i').test(penghuni)
+
+                            return new RegExp(watch('search')!, 'i').test(e._penghuni!)
                         })
                             ?.map((data, i) => <tr key={i}>
                                 <td>{i + 1}</td>
-                                <td>{
-                                    dataPenghuni?.filter(e =>
-                                        e.id == dataKamar?.filter(e => e.id == data.kamar)[0]?.penghuni
-                                    )[0]?.nama
-                                }</td>
+                                <td>{data._penghuni}</td>
+                                <td>{data._kamar}</td>
                                 <td>{data.tgl_bayar}</td>
-                                <td>{dataKamar?.filter(e => e.id == data.kamar)[0]?.biaya}</td>
-                                <td>{dataPetugas?.filter(e => e.id == data.petugas)[0]?.nama}</td>
+                                <td>{data.biaya}</td>
+                                <td>{data._petugas}</td>
                                 <td>
                                     <div className="dropdown dropdown-end">
                                         <button id='dropdown' className="p-0"><Ellipsis /></button>
@@ -173,6 +194,8 @@ function Transaksi() {
 
                                             <li><button id='delete' onClick={() =>
                                                 openModal(data, 'delete')}>Delete</button></li>
+
+                                            <li><Link id='invoice' to={`/invoice/${data.id}`} >Invoice</Link></li>
                                         </ul>
                                     </div>
                                 </td>
@@ -186,18 +209,12 @@ function Transaksi() {
                 <label className='text-sm'>kamar:
                     <select {...register('kamar')} defaultValue={'pilih kamar'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
                         <option value="pilih kamar" disabled>pilih kamar</option>
-                        {dataKamar
-                            ?.filter(e => dataPenghuni?.filter(i => i.id == e.penghuni).length)
-                            ?.map(e => (<option key={e.id} value={e.id}>{e.kamar} - {
-                                dataKos?.filter(i => i.id == e.kos)[0]?.kos
-                            }</option>))}
+                        {dataKamar?.map(e => <option key={e.id} value={e.id}>{e.data}</option>)}
                     </select>
                 </label>
                 <label className='text-sm'>penghuni:
                     <input {...register('penghuni')} value={
-                        dataPenghuni?.filter(e =>
-                            e.id == dataKamar?.filter(e => e.id == watch('kamar')).map(e => e.penghuni)[0]
-                        ).map(e => `${e.nama} - ${e.no_hp}`)
+                        dataKamar?.filter(e => e.id == watch('kamar')).map(e => e.penghuni)[0]
                     } disabled className="input w-full" type="text" placeholder="penghuni" required />
                 </label>
                 <label className='text-sm'>Biaya (Rb):
@@ -205,8 +222,8 @@ function Transaksi() {
                         dataKamar?.filter(e => e.id == watch('kamar')).map(e => e.biaya)[0]
                     } disabled className="input w-full" type="number" placeholder="biaya" required />
                 </label>
-                <label {...register('tgl_masuk')} className='text-sm'>Tgl Masuk:
-                    <input value={
+                <label className='text-sm'>Tgl Masuk:
+                    <input {...register('tgl_masuk')} value={
                         dataKamar?.filter(e => e.id == watch('kamar')).map(e => e.tgl_masuk)[0]
                     } disabled className="input w-full" type="date" required />
                 </label>

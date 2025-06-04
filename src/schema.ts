@@ -55,7 +55,7 @@ export const schemaTransaksi = yup.object().shape({
     tgl_masuk: yup.string().required(),
     kamar: yup.string().required(),
     kos: yup.string().required(),
-    biaya: yup.string(),
+    biaya: yup.number(),
     image: yup.string(),
     imageChange: yup.string(),
     search: yup.string()

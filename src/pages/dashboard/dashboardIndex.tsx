@@ -1,17 +1,16 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { useFetcherKamar, useFetcherTransaksi } from '../../lib/fetcher';
 import BoxRotate from '../../components/boxRotate';
+import { useFetcherTransaksi } from '../../lib/fetcher';
 
 function useHooks() {
-    const { data: dataTransaksi, isLoading: isLoadingTransaksi } = useFetcherTransaksi();
-    const { data: dataKamar, isLoading: isLoadingKamar } = useFetcherKamar();
+    const { data: dataTransaksi, isLoading } = useFetcherTransaksi();
 
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
     const transaksi = dataTransaksi
         ?.filter(e => Number(e.tgl_bayar.split('-')[1]) == new Date().getMonth() + 1)
         .map(e => ({
             day: Number(e.tgl_bayar.split('-')[2]),
-            biaya: Number(dataKamar?.filter(i => i.id == e.kamar)[0]?.biaya) * 1000
+            biaya: Number(e.biaya) * 1000
         }))
         .sort((a, b) => a.day - b.day)
 
@@ -38,7 +37,6 @@ function useHooks() {
         }, [{ day: 0, totalPendapatan: 0 }])
             .filter(e => e.day != 0),
     }
-    const isLoading = isLoadingTransaksi || isLoadingKamar
 
     return { data, isLoading, bulan }
 }

@@ -8,8 +8,8 @@ function Table({ rows, children }: Props) {
         <table className="table">
             <thead>
                 <tr>
-                    {rows.map(item =>
-                        <th key={item}>{item}</th>
+                    {rows.map((item, id) =>
+                        <th key={id}>{item}</th>
                     )}
                 </tr>
             </thead>

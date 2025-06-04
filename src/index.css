@@ -37,17 +37,27 @@
   --noise: 0;
 }
 
+@media print {
+  body * {
+    @apply text-black
+  }
+  .dont-print {
+    @apply hidden
+  }
+}
+
 .center {
     @apply flex flex-col h-screen justify-center items-center
 }
 
 input:focus, select:focus {
-    @apply border-0;
+    @apply border-0
 }
 label {
-  @apply flex flex-col gap-2;
+  @apply flex flex-col gap-2
 }
 
 tbody tr {
-  @apply hover:bg-base-300;
+  @apply hover:bg-base-300
 }
+

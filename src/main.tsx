@@ -7,7 +7,7 @@ import { Toaster } from 'sonner'
 // @ts-ignore
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Toaster position='top-center'/>
+    <Toaster richColors position='top-left'/>
     <App />
   </StrictMode>,
 )
