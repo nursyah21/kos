@@ -8,14 +8,12 @@ management system boarding house build with react and firebase
 
 ## screenshot
 
-<div style="overflow-x:auto; display:flex; gap: 1em">
-    <img src="screenshots/login.png" style="height:300px"/>
-    <img src="screenshots/dashboard.png" style="height:300px"/>
-    <img src="screenshots/transaksi.png" style="height:300px" />
-    <img src="screenshots/invoice.png" style="height:300px" />
-    <img src="screenshots/kamar-kos.png" style="height:300px" />
-    <img src="screenshots/penghuni-petugas.png" style="height:300px" />
-</div>
+![image](screenshots/login.png)
+![image](screenshots/dashboard.png)
+![image](screenshots/transaksi.png)
+![image](screenshots/invoice.png)
+![image](screenshots/kamar-kos.png)
+![image](screenshots/penghuni-petugas.png)
 
 ## tech stack
 
