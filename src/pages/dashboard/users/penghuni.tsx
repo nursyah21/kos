@@ -13,7 +13,8 @@ import { useFetcherPenghuni } from '../../../lib/fetcher';
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
 import { $ } from '../../../lib/utils';
-import { schemaPenghuni, TSchemaPenghuni } from '../../../schema';
+import type { TSchemaPenghuni } from '../../../schema';
+import { schemaPenghuni } from '../../../schema';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
@@ -102,8 +103,6 @@ function Penghuni() {
             <BoxRotate />
         </div>
     }
-    const imageId = watch('imageChange') || watch('image') || 'default-image-id';
-
 
     return (<>
         <div className="p-4 container">

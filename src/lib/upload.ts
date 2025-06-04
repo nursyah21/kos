@@ -1,5 +1,3 @@
-import { toast } from "sonner";
-
 export const upload = (file: any) => {
     const username = import.meta.env.VITE_UPLOAD_USERNAME
     const password = import.meta.env.VITE_UPLOAD_PASSWORD

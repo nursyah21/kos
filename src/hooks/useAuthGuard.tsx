@@ -1,10 +1,14 @@
 import { Navigate } from 'react-router'
 import useAuthStore from '../store/authStore'
 
+interface Props {
+    children?: React.ReactNode
+}
+
 function useAuthGuard() {
     const { user, loading } = useAuthStore()
 
-    const ProtectedRoute = ({ children }) => {
+    const ProtectedRoute = ({ children }: Props) => {
         if (loading) {
             return <></>
         }
@@ -16,7 +20,7 @@ function useAuthGuard() {
         return children
     }
 
-    const PublicRoute = ({ children }) => {
+    const PublicRoute = ({ children }: Props) => {
         if (loading) {
             return <></>
         }

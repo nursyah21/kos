@@ -1,7 +1,7 @@
 import { collection, getDocs, orderBy, query } from "@firebase/firestore";
-import { TSchemaKamarKos, TSchemaKos, TSchemaPenghuni, TSchemaPetugas, TSchemaTransaksi } from "../schema";
-import { db } from "./firebase";
 import useSWR from "swr";
+import type { TSchemaKamarKos, TSchemaKos, TSchemaPenghuni, TSchemaPetugas, TSchemaTransaksi } from "../schema";
+import { db } from "./firebase";
 
 export const fetcherKamar = async () => {
     const kamarSnapshot = await getDocs(collection(db, 'kamar'));

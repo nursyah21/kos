@@ -13,7 +13,8 @@ import { useFetcherKos } from '../../../lib/fetcher';
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
 import { $ } from '../../../lib/utils';
-import { schemaKos, TSchemaKos } from '../../../schema';
+import type { TSchemaKos } from '../../../schema';
+import { schemaKos } from '../../../schema';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {

@@ -1,7 +1,8 @@
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
-import { FormEvent, useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { NavLink } from 'react-router';
 import { toast } from 'sonner';
@@ -13,7 +14,8 @@ import { useFetcherKamar, useFetcherKos, useFetcherPenghuni } from '../../../lib
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
 import { $ } from '../../../lib/utils';
-import { schemaKamarKos, TSchemaKamarKos } from '../../../schema';
+import type { TSchemaKamarKos } from '../../../schema';
+import { schemaKamarKos } from '../../../schema';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {

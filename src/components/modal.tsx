@@ -1,6 +1,12 @@
-import { X } from 'lucide-react'
+import { X } from 'lucide-react';
 
-function Modal({ id = '', title = '', children }) {
+interface Props {
+    id: string;
+    title: string;
+    children: React.ReactNode;
+}
+
+function Modal({ id, title, children }: Props) {
     return <dialog id={id} className='modal'>
         <div className='modal-box '>
             <form method='dialog'>

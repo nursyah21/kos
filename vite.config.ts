@@ -6,7 +6,7 @@ import fs from 'fs'
 import path from 'path'
 
 function createPageChunksFromDir(dir:string) {
-  const chunks = {};
+  const chunks: Record<string, string[]>  = {};
   const files = fs.readdirSync(path.resolve(dir));
   
   for (const file of files) {

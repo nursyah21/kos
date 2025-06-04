@@ -1,7 +1,8 @@
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
-import { FormEvent, useEffect, useState } from 'react';
+import type { FormEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
@@ -12,7 +13,8 @@ import { useFetcherKamar, useFetcherKos, useFetcherPenghuni, useFetcherPetugas, 
 import { db } from '../../lib/firebase';
 import { upload } from '../../lib/upload';
 import { $ } from '../../lib/utils';
-import { schemaTransaksi, TSchemaTransaksi } from '../../schema';
+import type { TSchemaTransaksi } from '../../schema';
+import { schemaTransaksi } from '../../schema';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {

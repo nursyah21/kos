@@ -1,8 +1,15 @@
-import { onAuthStateChanged } from '@firebase/auth';
+import { onAuthStateChanged, type User } from '@firebase/auth';
 import { create } from 'zustand';
 import { auth } from '../lib/firebase';
 
-const useAuthStore = create((set) => {
+interface AuthState {
+  user: User | null;
+  loading: boolean;
+  setUser: (user: User | null) => void;
+  setLoading: (loading: boolean) => void;
+}
+
+const useAuthStore = create<AuthState>((set) => {
     onAuthStateChanged(auth, (user) => {
         set({user, loading: false})
     })

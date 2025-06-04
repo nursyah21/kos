@@ -13,8 +13,8 @@ import { useFetcherPetugas } from '../../../lib/fetcher';
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
 import { $ } from '../../../lib/utils';
-import { schemaPenghuni, TSchemaPenghuni } from '../../../schema';
-
+import { schemaPenghuni } from '../../../schema';
+import type { TSchemaPenghuni } from '../../../schema';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {

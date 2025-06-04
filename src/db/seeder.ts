@@ -60,7 +60,7 @@ for (const data of dataKamar) {
 const tempKamar = await db.collection('kamar').listDocuments()
 const tempPetugas = await db.collection('petugas').listDocuments()
 
-const dataTransaksi = Array.from({ length: 10 }, (_, idx) => ({
+const dataTransaksi = Array.from({ length: 10 }, () => ({
     kamar: tempKamar[randomNumber(8)].id,
     petugas: tempPetugas[randomNumber(8)].id,
     tgl_bayar: `${new Date().toISOString().slice(0, 7)}-${randomNumber(8).toString().padStart(2, '0')}`,
