@@ -77,12 +77,12 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'kos', data.id!));
                 toast.success('kos deleted!')
             }
-        } catch (e) {
+            mutate('kos')
+            document.querySelector<HtmlDialog>('#modal_kos')?.close()
+        } catch (err) {
+            console.log(err)
             toast.error(`error ${typeSubmit} kos`)
         }
-        mutate('kos')
-
-        document.querySelector<HtmlDialog>('#modal_kos')?.close()
     })
     return {
         setValue, register, onSubmit, isSubmitting,

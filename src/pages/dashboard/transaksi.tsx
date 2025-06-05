@@ -19,7 +19,7 @@ import type { HtmlDialog } from '../../types/types';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
-    const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
+    const { watch, setValue, register, reset, formState: { isSubmitting } } = useForm({
         resolver: yupResolver(schemaTransaksi)
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
@@ -62,6 +62,7 @@ const useHooks = () => {
     }
 
     // handle submit not work so we just use manual
+    // dont waste your time to fix it, if it work so it work
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault()
         try {
@@ -85,13 +86,12 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'transaksi', watch('id')!));
                 toast.success('transaksi deleted!')
             }
+            mutate('transaksi')
+            document.querySelector<HtmlDialog>('#modal_transaksi')?.close()
         } catch (err) {
             console.log(err)
             toast.error(`error ${typeSubmit} transaksi`)
         }
-        mutate('transaksi')
-
-        document.querySelector<HtmlDialog>('#modal_transaksi')?.close()
     }
 
     const { data: _data, isLoading: _isLoading } = useFetcherTransaksi()
@@ -129,8 +129,8 @@ const useHooks = () => {
 
     return {
         setValue, register, onSubmit, isSubmitting,
-        watch, errors, openModal, isUploading,
-        typeSubmit, handleSubmit, isLoading, dataKamar,
+        watch, openModal, isUploading,
+        typeSubmit, isLoading, dataKamar,
         data, dataPetugas
     }
 }
@@ -207,8 +207,8 @@ function Transaksi() {
         <Modal id='modal_transaksi' title={`${typeSubmit} transaksi`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>kamar:
-                    <select {...register('kamar')} defaultValue={'pilih kamar'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
-                        <option value="pilih kamar" disabled>pilih kamar</option>
+                    <select {...register('kamar')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                        <option value="" disabled>pilih kamar</option>
                         {dataKamar?.map(e => <option key={e.id} value={e.id}>{e.data}</option>)}
                     </select>
                 </label>
@@ -231,8 +231,8 @@ function Transaksi() {
                     <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'delete'} {...register('tgl_bayar')} className="input w-full" type="date" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Petugas:
-                    <select {...register('petugas')} defaultValue={'pilih petugas'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
-                        <option value="pilih petugas" disabled>pilih petugas</option>
+                    <select {...register('petugas')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                        <option value="" disabled>pilih petugas</option>
                         {dataPetugas?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
                     </select>
                 </label>

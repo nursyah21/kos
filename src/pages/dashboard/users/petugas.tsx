@@ -78,12 +78,12 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'petugas', data.id!));
                 toast.success('petugas deleted!')
             }
-        } catch (e) {
+            mutate('petugas')
+            document.querySelector<HtmlDialog>('#modal_petugas')?.close()
+        } catch (err) {
+            console.log(err)
             toast.error(`error ${typeSubmit} petugas`)
         }
-        mutate('petugas')
-
-        document.querySelector<HtmlDialog>('#modal_petugas')?.close()
     })
 
     const { data, isLoading } = useFetcherPetugas()

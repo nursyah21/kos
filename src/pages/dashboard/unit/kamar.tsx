@@ -80,13 +80,12 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'kamar', watch('id')!));
                 toast.success('kamar deleted!')
             }
+            mutate('kamar')
+            document.querySelector<HtmlDialog>('#modal_kamar')?.close()
         } catch (err) {
             toast.error(`error ${typeSubmit} kamar`)
             console.log(err)
         }
-        mutate('kamar')
-
-        document.querySelector<HtmlDialog>('#modal_kamar')?.close()
     })
 
     const { data: _data, isLoading: isLoadingKamar } = useFetcherKamar()
