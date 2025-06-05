@@ -51,7 +51,7 @@ walkDir(process.cwd());
 const endTime = performance.now();
 const durationMs = (endTime - startTime) / 1000;
 
-printStats();
+// printStats();
 
 console.log('\n\nPemrosesan selesai.');
 console.log('Statistik Proyek:');
