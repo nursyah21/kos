@@ -1,7 +1,9 @@
 import { faker } from '@faker-js/faker';
 import admin from 'firebase-admin';
+import type { TSchemaKamarKos, TSchemaKos, TSchemaPenghuni, TSchemaPetugas } from '../../src/schema';
 import { db } from './firebase';
-import type { TSchemaKamarKos } from '../../src/schema';
+
+const randomNumber = (n: number) => Math.floor(Math.random() * n)
 
 console.log('generate fake data...')
 const dataPenghuni = Array.from({ length: 10 }, () => ({
@@ -38,9 +40,8 @@ for (const data of dataKos) {
 }
 
 console.log('wait 5second to see new data')
-await new Promise(res=>setTimeout(res, 5000))
+await new Promise(res => setTimeout(res, 5000))
 
-const randomNumber = (n: number) => Math.floor(Math.random() * n)
 
 const tempPenghuni = await db.collection('penghuni').listDocuments()
 const tempKos = await db.collection('kos').listDocuments()
@@ -60,24 +61,27 @@ for (const data of dataKamar) {
 }
 
 console.log('wait 5second to see new data')
-await new Promise(res=>setTimeout(res, 5000))
+await new Promise(res => setTimeout(res, 5000))
 
-const tempKamar = await Promise.all(
-    (await db.collection('kamar').listDocuments()).map(async (e) => ({
-        id: e.id,
-        data: (await e.get()).data() as TSchemaKamarKos
+const allPenghuni = (await db.collection('penghuni').get()).docs.map(e => ({ id: e.id, ...e.data() as TSchemaPenghuni }))
+const allPetugas = (await db.collection('petugas').get()).docs.map(e => ({ id: e.id, ...e.data() as TSchemaPetugas }))
+const allKos = (await db.collection('kos').get()).docs.map(e => ({ id: e.id, ...e.data() as TSchemaKos }))
+const allKamar = ((await db.collection('kamar').get()).docs.map(e => ({ id: e.id, ...e.data() as TSchemaKamarKos }))
+    .map(e => ({
+        ...e,
+        kos: allKos.filter(i => i.id, e.kos)[0],
+        penghuni: allPenghuni.filter(i => i.id == e.penghuni)[0]
     }))
 )
-const tempPetugas = await db.collection('petugas').listDocuments()
+
 
 const dataTransaksi = Array.from({ length: 10 }, () => {
-    const kamar = tempKamar[randomNumber(8)]
+    const rand = randomNumber(8)
     return {
-        kamar : kamar.id,
-        petugas: tempPetugas[randomNumber(8)].id,
-        tgl_bayar: `${new Date().toISOString().slice(0, 7)}-${randomNumber(8).toString().padStart(2, '0')}`,
+        kamar: allKamar[rand],
+        petugas: allPetugas[rand],
+        tgl_bayar: `${new Date().toISOString().slice(0, 7)}-${rand.toString().padStart(2, '0')}`,
         created_at: admin.firestore.FieldValue.serverTimestamp(),
-        biaya: kamar.data.biaya
     }
 })
 

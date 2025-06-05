@@ -95,7 +95,7 @@ const useHooks = () => {
     const data = _data?.map(e => ({
         ...e,
         _kos: dataKos?.filter(i => i.id == e.kos)[0]?.kos,
-        _penghuni: dataPenghuni?.filter(i => i.id)[0]?.nama
+        _penghuni: dataPenghuni?.filter(i => i.id == e.penghuni)[0]?.nama
     }))
     const isLoading = isLoadingKamar || isLoadingKos || isLoadingPenghuni || isLoadingPenghuni
 

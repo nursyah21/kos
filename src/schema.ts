@@ -37,7 +37,7 @@ export const schemaKamarKos = yup.object().shape({
     id: yup.string(),
     kamar: yup.string().required(),
     kos: yup.string().required(),
-    penghuni: yup.string().required(),
+    penghuni: yup.string(),
     tgl_masuk: yup.string().required(),
     biaya: yup.string(),
     image: yup.string(),

@@ -67,9 +67,8 @@ const useHooks = () => {
         e.preventDefault()
         try {
             const newData = {
-                kamar: watch('kamar'),
-                biaya: dataKamar?.filter(e => e.id == watch('kamar'))[0].biaya,
-                petugas: watch('petugas'),
+                kamar: dataKamar?.filter(e => e.id == watch('kamar'))[0],
+                petugas: dataPetugas?.filter(e=>e.id == watch('petugas'))[0],
                 tgl_bayar: watch('tgl_bayar'),
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
@@ -102,19 +101,20 @@ const useHooks = () => {
 
     const isLoading = _isLoading || isLoadingKamar || isLoadingPenghuni || isLoadingKos || isLoadingPetugas
 
-    const data = _data?.map(e => {
-        const kamar = _dataKamar?.filter(i => i.id == e.kamar)[0]
-        const kos = dataKos?.filter(i => i.id == kamar?.kos)[0]
-        const penghuni = dataPenghuni?.filter(i => i.id == kamar?.penghuni)[0]
-        const petugas = dataPetugas?.filter(i => i.id == e.petugas)[0]
-        return {
-            ...e,
-            _kamar: kamar?.kamar,
-            _penghuni: penghuni?.nama,
-            _petugas: petugas?.nama,
-            _kos: kos?.kos
-        }
-    })
+    const data = _data
+    // ?.map(e => {
+    //     const kamar = _dataKamar?.filter(i => i.id == e.kamar)[0]
+    //     const kos = dataKos?.filter(i => i.id == kamar?.kos)[0]
+    //     const penghuni = dataPenghuni?.filter(i => i.id == kamar?.penghuni)[0]
+    //     const petugas = dataPetugas?.filter(i => i.id == e.petugas)[0]
+    //     return {
+    //         ...e,
+    //         _kamar: kamar?.kamar,
+    //         _penghuni: penghuni?.nama,
+    //         _petugas: petugas?.nama,
+    //         _kos: kos?.kos
+    //     }
+    // })
 
     const dataKamar = _dataKamar
         ?.filter(e =>
@@ -147,6 +147,8 @@ function Transaksi() {
         </div>
     }
 
+    console.log(data)
+
     return (<>
         <div className="p-4 container">
             <div className='flex flex-col justify-between sticky top-0 py-2 bg-base-100 z-10'>
@@ -175,25 +177,22 @@ function Transaksi() {
                                 return true
                             }
 
-                            return new RegExp(watch('search')!, 'i').test(e._penghuni!)
+                            // return new RegExp(watch('search')!, 'i').test(e._penghuni!)
                         })
                             ?.map((data, i) => <tr key={i}>
                                 <td>{i + 1}</td>
-                                <td>{data._penghuni}</td>
+                                {/* <td>{data.kamar}</td>
                                 <td>{data._kamar}</td>
                                 <td>{data._kos}</td>
                                 <td>{data.tgl_bayar}</td>
                                 <td>{data.biaya}</td>
-                                <td>{data._petugas}</td>
+                                <td>{data._petugas}</td> */}
                                 <td>
                                     <div className="dropdown dropdown-end">
                                         <button id='dropdown' className="p-0"><Ellipsis /></button>
                                         <ul className="border menu dropdown-content bg-base-300  w-48  p-2">
-                                            <li><button id='edit' onClick={() =>
-                                                openModal(data, 'edit')}>Edit</button></li>
-
                                             <li><button id='delete' onClick={() =>
-                                                openModal(data, 'delete')}>Delete</button></li>
+                                                openModal(data, 'delete')}>Soft Delete</button></li>
 
                                             <li><Link id='invoice' to={`/invoice/${data.id}`} >Invoice</Link></li>
                                         </ul>
