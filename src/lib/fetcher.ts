@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, orderBy, query } from "@firebase/firestore";
+import { collection, doc, getDoc, getDocs, orderBy, query, where } from "@firebase/firestore";
 import useSWR from "swr";
 import type { TSchemaKamarKos, TSchemaKos, TSchemaPenghuni, TSchemaPetugas, TSchemaTransaksi } from "../schema";
 import { db } from "./firebase";
@@ -31,37 +31,33 @@ export const fetcherPetugas = async () => {
 };
 
 export const fetcherTransaksi = async () => {
-    const querySnapshot = await getDocs(query(collection(db, 'transaksi'), orderBy('tgl_bayar', 'desc')));
-    return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data() as TSchemaTransaksi
-    }));
+    try {
+        const querySnapshot = await getDocs(query(collection(db, 'transaksi'), where('is_deleted', '==', false), orderBy('tgl_bayar', 'desc')));
+
+        return querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data() as TSchemaTransaksi
+        }));
+    } catch (error) {
+        console.log(error)
+    }
 };
 
 export const fetcherInvoice = async (id: string) => {
-    const snap = await getDoc(doc(db, 'transaksi', id));
-    const data = snap.exists() ? { id: snap.id, ...snap.data() as TSchemaTransaksi } : null;
-    if (!data) return data
+    const data = (await getDoc(doc(db, 'transaksi', id))).data() as TSchemaTransaksi
 
-    const petugasSnap = await getDoc(doc(db, 'petugas', data.petugas))
-    const petugasData = petugasSnap.data() as TSchemaPetugas
-
-    const kamarSnap = await getDoc(doc(db, 'kamar', data.kamar))
-    const kamarData = kamarSnap.data() as TSchemaKamarKos
-
-    const penghuniSnap = await getDoc(doc(db, 'penghuni', kamarData.penghuni))
-    const penghuniData = penghuniSnap.data() as TSchemaPenghuni
-
-    const kosSnap = await getDoc(doc(db, 'kos', kamarData.kos))
-    const kosData = kosSnap.data() as TSchemaKos
+    console.log(data)
 
     return {
-        petugas: `${petugasData.nama} - ${petugasData.no_hp}`,
-        penghuni: `${penghuniData.nama} - ${penghuniData.no_hp}`,
-        kamar: kamarData.kamar,
-        kos: `${kosData.kos} - ${kosData.address}`,
+        petugas: data.petugas.nama,
+        petugas_nohp: data.petugas.no_hp,
+        penghuni: data.kamar.penghuni.nama,
+        penghuni_nohp: data.kamar.penghuni.no_hp,
+        kamar: data.kamar.kamar,
+        kos: data.kamar.kos.kos,
+        kos_address: data.kamar.kos.address,
         tgl_bayar: data.tgl_bayar,
-        biaya: data.biaya
+        biaya: (Number(data.kamar.biaya) * 1000).toLocaleString()
     }
 };
 

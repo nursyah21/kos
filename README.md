@@ -78,6 +78,8 @@ yarn
 
 note: `VITE_UPLOAD_*` based on your backend api
 
+note: you need to enable indexes, for collection transaksi in firebase so it can use where with order by
+
 **prepare for cloudflare**
 
 1. you need an custom domain for public domain your cloud storage

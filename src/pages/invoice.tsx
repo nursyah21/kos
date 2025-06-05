@@ -10,15 +10,15 @@ const useHooks = () => {
     const { data: dataFetching, isLoading } = useFetcherInvoice(id!)
 
     const data = [
-        ['penghuni', dataFetching?.penghuni.split('-')[0]],
-        ['no hp', dataFetching?.penghuni.split('-')[1]],
-        ['petugas', dataFetching?.petugas.split('-')[0]],
-        ['no hp', dataFetching?.petugas.split('-')[1]],
-        ['kos', dataFetching?.kos.split('-')[0]],
-        ['alamat kos', dataFetching?.kos.split('-')[1]],
+        ['penghuni', dataFetching?.penghuni],
+        ['no hp', dataFetching?.penghuni_nohp],
+        ['petugas', dataFetching?.petugas],
+        ['no hp', dataFetching?.penghuni_nohp],
+        ['kos', dataFetching?.kos],
+        ['alamat kos', dataFetching?.kos_address],
         ['kamar', dataFetching?.kamar],
         ['tgl bayar', dataFetching?.tgl_bayar],
-        ['biaya', `Rp${(dataFetching?.biaya! * 1000).toLocaleString()}`],
+        ['biaya', `Rp${dataFetching?.biaya}`],
     ]
 
     const print = () => {

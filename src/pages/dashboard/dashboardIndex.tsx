@@ -6,11 +6,12 @@ function useHooks() {
     const { data: dataTransaksi, isLoading } = useFetcherTransaksi();
 
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+    
     const transaksi = dataTransaksi
         ?.filter(e => Number(e.tgl_bayar.split('-')[1]) == new Date().getMonth() + 1)
         .map(e => ({
             day: Number(e.tgl_bayar.split('-')[2]),
-            biaya: Number(e.biaya) * 1000
+            biaya: Number(e.kamar.biaya) * 1000
         }))
         .sort((a, b) => a.day - b.day)
 
