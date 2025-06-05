@@ -4,7 +4,7 @@ import type { TSchemaKamarKos, TSchemaKos, TSchemaPenghuni, TSchemaPetugas, TSch
 import { db } from "./firebase";
 
 export const fetcherKamar = async () => {
-    const kamarSnapshot = await getDocs(collection(db, 'kamar'));
+    const kamarSnapshot = await getDocs(query(collection(db, 'kamar'), orderBy('kamar')));
 
     return kamarSnapshot.docs.map(doc => ({
         id: doc.id,
@@ -13,7 +13,7 @@ export const fetcherKamar = async () => {
 };
 
 export const fetcherPenghuni = async () => {
-    const penghuniSnapshot = await getDocs(collection(db, 'penghuni'));
+    const penghuniSnapshot = await getDocs(query(collection(db, 'penghuni'), orderBy('nama')));
 
     return penghuniSnapshot.docs.map(doc => ({
         id: doc.id,
@@ -22,7 +22,7 @@ export const fetcherPenghuni = async () => {
 };
 
 export const fetcherPetugas = async () => {
-    const penghuniSnapshot = await getDocs(collection(db, 'petugas'));
+    const penghuniSnapshot = await getDocs(query(collection(db, 'petugas'), orderBy('nama')));
 
     return penghuniSnapshot.docs.map(doc => ({
         id: doc.id,
@@ -55,8 +55,6 @@ export const fetcherInvoice = async (id: string) => {
     const kosSnap = await getDoc(doc(db, 'kos', kamarData.kos))
     const kosData = kosSnap.data() as TSchemaKos
 
-
-
     return {
         petugas: `${petugasData.nama} - ${petugasData.no_hp}`,
         penghuni: `${penghuniData.nama} - ${penghuniData.no_hp}`,
@@ -68,7 +66,7 @@ export const fetcherInvoice = async (id: string) => {
 };
 
 const fetcherKos = async () => {
-    const querySnapshot = await getDocs(collection(db, 'kos'));
+    const querySnapshot = await getDocs(query(collection(db, 'kos'), orderBy('kos')));
     return querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data() as TSchemaKos

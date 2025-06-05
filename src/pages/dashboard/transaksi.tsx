@@ -110,9 +110,10 @@ const useHooks = () => {
         const petugas = dataPetugas?.filter(i => i.id == e.petugas)[0]
         return {
             ...e,
-            _kamar: `${kamar?.kamar} - ${kos?.kos}`,
+            _kamar: kamar?.kamar,
             _penghuni: penghuni?.nama,
-            _petugas: petugas?.nama
+            _petugas: petugas?.nama,
+            _kos: kos?.kos
         }
     })
 
@@ -147,8 +148,6 @@ function Transaksi() {
         </div>
     }
 
-
-
     return (<>
         <div className="p-4 container">
             <div className='flex flex-col justify-between sticky top-0 py-2 bg-base-100 z-10'>
@@ -156,9 +155,12 @@ function Transaksi() {
                     <h2 className="text-2xl font-semibold">Transaksi</h2>
                 </div>
                 <form className='w-full' onSubmit={onSubmit}>
-                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search transaksi penghuni...' />
+                    <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search penghuni...' />
                 </form>
             </div>
+            <p className='text-sm text-slate-400 text-right'>
+                total: {data?.length}
+            </p>
             <div className='flex bottom-10 right-10 fixed z-10'>
                 <div>
                     <button className='btn btn-primary'
@@ -169,7 +171,7 @@ function Transaksi() {
             </div>
 
             <div className="overflow-x-auto mt-4">
-                <Table rows={['#', 'Penghuni', 'Kamar', 'Tgl Bayar', 'Biaya (Rb)', 'Petugas', '']}>
+                <Table rows={['#', 'Penghuni', 'Kamar', 'Kos', 'Tgl Bayar', 'Biaya (Rb)', 'Petugas', '']}>
                     {
                         data?.filter(e => {
                             if (!watch('search')) {
@@ -182,6 +184,7 @@ function Transaksi() {
                                 <td>{i + 1}</td>
                                 <td>{data._penghuni}</td>
                                 <td>{data._kamar}</td>
+                                <td>{data._kos}</td>
                                 <td>{data.tgl_bayar}</td>
                                 <td>{data.biaya}</td>
                                 <td>{data._petugas}</td>

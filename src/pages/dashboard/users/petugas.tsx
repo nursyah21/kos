@@ -86,20 +86,22 @@ const useHooks = () => {
         // @ts-ignore
         $('#modal_petugas').close()
     })
+
+    const { data, isLoading } = useFetcherPetugas()
+
     return {
         setValue, register, onSubmit, isSubmitting,
         watch, errors, openModal, isUploading,
-        typeSubmit
+        typeSubmit, data, isLoading
     }
 }
 
 
 function Petugas() {
     const { register, onSubmit, isSubmitting,
-        watch, openModal, typeSubmit, isUploading
+        watch, openModal, typeSubmit, isUploading,
+        data, isLoading
     } = useHooks()
-
-    const { data, isLoading } = useFetcherPetugas()
 
     if (isLoading) {
         return <div className='center' id='loading'>
@@ -124,6 +126,9 @@ function Petugas() {
                     <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search petugas...' />
                 </form>
             </div>
+            <p className='text-sm text-slate-400 text-right'>
+                total: {data?.length}
+            </p>
             <div className='flex bottom-10 right-10 fixed z-10'>
                 <div>
                     <button className='btn btn-primary'
@@ -133,7 +138,7 @@ function Petugas() {
                 </div>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto mt-4">
                 <Table rows={['#', 'Petugas', 'No Hp', '']}>
                     {
                         data?.filter(e => {

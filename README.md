@@ -14,9 +14,10 @@ management system boarding house build with react and firebase
 ![image](screenshots/login.png)
 ![image](screenshots/dashboard.png)
 ![image](screenshots/transaksi.png)
-![image](screenshots/invoice.png)
 ![image](screenshots/kamar-kos.png)
 ![image](screenshots/penghuni-petugas.png)
+![image](screenshots/invoice.png)
+![image](screenshots/invoice-print.png)
 
 </details>
 

@@ -124,6 +124,9 @@ function Kos() {
                     <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search kos...' />
                 </form>
             </div>
+            <p className='text-sm text-slate-400 text-right'>
+                total: {data?.length}
+            </p>
             <div className='flex bottom-10 right-10 fixed z-10'>
                 <div>
                     <button className='btn btn-primary'

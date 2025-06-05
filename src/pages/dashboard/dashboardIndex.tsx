@@ -52,9 +52,9 @@ function DashboardIndex() {
 
     return (<>
         <div className="p-4 container">
-            <div className='flex justify-between'>
-                <h2 className="text-2xl font-semibold mb-4">Dashboard</h2>
-                <h2 className="font-bold my-2">{bulan[new Date().getMonth()]} {new Date().getFullYear()}</h2>
+            <div className='flex justify-between flex-col sm:flex-row pt-2'>
+                <h2 className="text-2xl font-semibold">Dashboard</h2>
+                <h2 className="font-bold">{bulan[new Date().getMonth()]} {new Date().getFullYear()}</h2>
             </div>
 
             <div className="flex gap-4 py-12 sm:flex-row flex-col">
@@ -69,7 +69,10 @@ function DashboardIndex() {
                 </div>
             </div>
             <div className="shadow-2xl rounded-xl">
-                <h2 className="text-xl font-semibold my-4">Grafik Transaksi</h2>
+                <div className='my-4'>
+                    <h2 className="text-xl font-semibold">Transaksi</h2>
+                    <p className='text-sm text-slate-400'>total transaksi/hari</p>
+                </div>
                 <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={data.dataTransaksi} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                         <Line type="monotone" dataKey="totalTransaksi" stroke="#8884d8" />
@@ -81,7 +84,11 @@ function DashboardIndex() {
                 </ResponsiveContainer>
             </div>
             <div className="shadow-2xl rounded-xl">
-                <h2 className="text-xl font-semibold my-4">Grafik Pendapatan</h2>
+                <div className='my-4'>
+                    <h2 className="text-xl font-semibold">Pendapatan</h2>
+                    <p className='text-sm text-slate-400'>total pendapatan/hari</p>
+                </div>
+
                 <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={data.dataPendapatan} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                         <Line type="monotone" dataKey="totalPendapatan" stroke="#8884d8" />

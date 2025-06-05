@@ -121,13 +121,16 @@ function Penghuni() {
                     <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search penghuni...' />
                 </form>
             </div>
+            <p className='text-sm text-slate-400 text-right'>
+                total: {data?.length}
+            </p>
             <div className='bottom-10 right-10 fixed z-10'>
                 <button className='btn btn-primary'
                     // @ts-ignore
                     onClick={openModal}
                 ><Plus />Penghuni</button>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto mt-4">
                 <Table rows={['#', 'Penghuni', 'No Hp', '']}>
                     {
                         data?.filter(e => {

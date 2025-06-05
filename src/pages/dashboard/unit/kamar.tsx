@@ -97,25 +97,35 @@ const useHooks = () => {
         $('#modal_kamar').close()
     }
 
+    const { data: _data, isLoading: isLoadingKamar } = useFetcherKamar()
+    const { data: dataKos, isLoading: isLoadingKos } = useFetcherKos()
+    const { data: dataPenghuni, isLoading: isLoadingPenghuni } = useFetcherPenghuni()
+
+    const data = _data?.map(e => ({
+        ...e,
+        _kos: dataKos?.filter(i => i.id == e.kos)[0].kos,
+        _penghuni: dataPenghuni?.filter(i => i.id)[0].nama
+    }))
+    const isLoading = isLoadingKamar || isLoadingKos || isLoadingPenghuni || isLoadingPenghuni
+
+
     return {
         setValue, register, onSubmit, isSubmitting,
         watch, errors, openModal, isUploading,
-        typeSubmit, handleSubmit
+        typeSubmit, handleSubmit, data, isLoading,
+        dataKos, dataPenghuni
     }
 }
 
 
 function Kos() {
     const { register, onSubmit, isSubmitting,
-        watch, openModal, typeSubmit, isUploading
+        watch, openModal, typeSubmit, isUploading,
+        data, isLoading,
+        dataKos, dataPenghuni
     } = useHooks()
 
-
-    const { data, isLoading } = useFetcherKamar()
-    const { data: dataKos, isLoading: isLoadingKos } = useFetcherKos()
-    const { data: dataPenghuni, isLoading: isLoadingPenghuni } = useFetcherPenghuni()
-
-    if (isLoading || isLoadingKos || isLoadingPenghuni) {
+    if (isLoading) {
         return <div className='center' id='loading'>
             <BoxRotate />
         </div>
@@ -138,6 +148,9 @@ function Kos() {
                     <input {...register('search')} type="text" className='input w-full mt-4' placeholder='Search kamar...' />
                 </form>
             </div>
+            <p className='text-sm text-slate-400 text-right'>
+                total: {data?.length}
+            </p>
             <div className='flex bottom-10 right-10 fixed z-10'>
                 <div>
                     <button className='btn btn-primary'
@@ -159,8 +172,8 @@ function Kos() {
                             .map((data, i) => <tr key={i}>
                                 <td>{i + 1}</td>
                                 <td>{data.kamar}</td>
-                                <td>{dataKos?.filter(i => i.id == data.kos)[0]?.kos}</td>
-                                <td>{dataPenghuni?.filter(i => i.id == data.penghuni)[0]?.nama}</td>
+                                <td>{data._kos}</td>
+                                <td>{data._penghuni}</td>
                                 <td>{data.tgl_masuk}</td>
                                 <td>{data.biaya}</td>
                                 <td>
