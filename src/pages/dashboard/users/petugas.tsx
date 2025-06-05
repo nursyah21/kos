@@ -46,13 +46,13 @@ const useHooks = () => {
     }, [total])
 
     const openModal = (data?: TSchemaPenghuni, type: TypeSubmit = 'add') => {
+        setTypeSubmit(type)
         reset()
         if (data) {
             setValue('id', data.id)
             setValue('nama', data.nama)
             setValue('no_hp', data.no_hp)
             setValue('imageChange', data.image)
-            setTypeSubmit(type)
         }
         
         document.querySelector<HtmlDialog>('#modal_petugas')?.showModal()
@@ -78,12 +78,12 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'petugas', data.id!));
                 toast.success('petugas deleted!')
             }
-        } catch (e) {
+            mutate('petugas')
+            document.querySelector<HtmlDialog>('#modal_petugas')?.close()
+        } catch (err) {
+            console.log(err)
             toast.error(`error ${typeSubmit} petugas`)
         }
-        mutate('petugas')
-
-        document.querySelector<HtmlDialog>('#modal_petugas')?.close()
     })
 
     const { data, isLoading } = useFetcherPetugas()

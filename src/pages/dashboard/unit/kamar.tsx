@@ -1,7 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
-import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { NavLink } from 'react-router';
@@ -19,7 +18,7 @@ import type { HtmlDialog } from '../../../types/types';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
-    const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
+    const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting } } = useForm({
         resolver: yupResolver(schemaKamarKos)
     })
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
@@ -47,6 +46,7 @@ const useHooks = () => {
     }, [total])
 
     const openModal = (data?: TSchemaKamarKos, type: TypeSubmit = 'add') => {
+        setTypeSubmit(type)
         reset()
         if (data) {
             setValue('id', data.id)
@@ -56,22 +56,15 @@ const useHooks = () => {
             setValue('tgl_masuk', data.tgl_masuk)
             setValue('biaya', data.biaya)
             setValue('imageChange', data.image)
-            setTypeSubmit(type)
         }
-        
+
         document.querySelector<HtmlDialog>('#modal_kamar')?.showModal()
     }
 
-    // handle submit not work so we just use manual
-    const onSubmit = async (e: FormEvent) => {
-        e.preventDefault()
+    const onSubmit = handleSubmit(async data => {
         try {
             const newData = {
-                kos: watch('kos'),
-                penghuni: watch('penghuni'),
-                kamar: watch('kamar'),
-                biaya: watch('biaya'),
-                tgl_masuk: watch('tgl_masuk'),
+                ...data,
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
             }
@@ -87,14 +80,13 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'kamar', watch('id')!));
                 toast.success('kamar deleted!')
             }
+            mutate('kamar')
+            document.querySelector<HtmlDialog>('#modal_kamar')?.close()
         } catch (err) {
             toast.error(`error ${typeSubmit} kamar`)
             console.log(err)
         }
-        mutate('kamar')
-
-        document.querySelector<HtmlDialog>('#modal_kamar')?.close()
-    }
+    })
 
     const { data: _data, isLoading: isLoadingKamar } = useFetcherKamar()
     const { data: dataKos, isLoading: isLoadingKos } = useFetcherKos()
@@ -102,17 +94,17 @@ const useHooks = () => {
 
     const data = _data?.map(e => ({
         ...e,
-        _kos: dataKos?.filter(i => i.id == e.kos)[0].kos,
-        _penghuni: dataPenghuni?.filter(i => i.id)[0].nama
+        _kos: dataKos?.filter(i => i.id == e.kos)[0]?.kos,
+        _penghuni: dataPenghuni?.filter(i => i.id)[0]?.nama
     }))
     const isLoading = isLoadingKamar || isLoadingKos || isLoadingPenghuni || isLoadingPenghuni
 
 
     return {
-        setValue, register, onSubmit, isSubmitting,
-        watch, errors, openModal, isUploading,
-        typeSubmit, handleSubmit, data, isLoading,
-        dataKos, dataPenghuni
+        register, onSubmit, isSubmitting,
+        watch, openModal, isUploading,
+        typeSubmit, data, isLoading,
+        dataPenghuni, dataKos
     }
 }
 
@@ -121,7 +113,7 @@ function Kos() {
     const { register, onSubmit, isSubmitting,
         watch, openModal, typeSubmit, isUploading,
         data, isLoading,
-        dataKos, dataPenghuni
+        dataPenghuni, dataKos
     } = useHooks()
 
     if (isLoading) {
@@ -193,9 +185,9 @@ function Kos() {
         <Modal id='modal_kamar' title={`${typeSubmit} kamar`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>kos:
-                    <select {...register('kos')} defaultValue={'pilih kos'} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
-                        <option value="pilih kos" disabled>pilih kos</option>
-                        {dataKos?.map(e => (<option key={e.id} value={e.id}>{e.kos} - {e.address}</option>))}
+                    <select {...register('kos')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full">
+                        <option value="" >pilih kos</option>
+                        {dataKos?.map(e => (<option key={e.id} value={e.id}>{e.kos}</option>))}
                     </select>
                 </label>
                 <label className='text-sm'>penghuni:

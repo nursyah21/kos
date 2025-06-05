@@ -44,14 +44,14 @@ const useHooks = () => {
 
     }, [total])
 
-    const openModal = (data?: TSchemaPenghuni, type: TypeSubmit = 'add') => {
+    const openModal =  (data?: TSchemaPenghuni, type: TypeSubmit = 'add') => {
+        setTypeSubmit(type)
         reset()
         if (data) {
             setValue('id', data.id)
             setValue('nama', data.nama)
             setValue('no_hp', data.no_hp)
             setValue('imageChange', data.image)
-            setTypeSubmit(type)
         }
 
         document.querySelector<HtmlDialog>('#modal_penghuni')?.showModal()
@@ -76,12 +76,12 @@ const useHooks = () => {
                 await deleteDoc(doc(db, 'penghuni', data.id!));
                 toast.success('penghuni deleted!')
             }
-        } catch (e) {
+            mutate('penghuni')
+            document.querySelector<HtmlDialog>('#modal_penghuni')?.close()
+        } catch (err) {
+            console.log(err)
             toast.error(`error ${typeSubmit} penghuni`)
         }
-        mutate('penghuni')
-
-        document.querySelector<HtmlDialog>('#modal_penghuni')?.close()
     })
     return {
         setValue, register, onSubmit, isSubmitting,
