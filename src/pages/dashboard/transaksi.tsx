@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from '@firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Ellipsis, Plus } from 'lucide-react';
 import type { FormEvent } from 'react';
@@ -77,7 +77,8 @@ const useHooks = () => {
                 petugas: dataPetugas?.filter(e => e.id == watch('_petugas'))[0],
                 tgl_bayar: watch('tgl_bayar'),
                 image: watch('imageChange') ?? '/emptyImage.png',
-                created_at: serverTimestamp()
+                created_at: serverTimestamp(),
+                is_deleted: false
             }
             if (typeSubmit == 'add') {
                 await addDoc(collection(db, 'transaksi'), newData);
@@ -177,7 +178,7 @@ function Transaksi() {
                                 return true
                             }
 
-                            // return new RegExp(watch('search')!, 'i').test(e._penghuni!)
+                            return new RegExp(watch('search')!, 'i').test(e._penghuni!)
                         })
                             ?.map((data, i) => <tr key={i}>
                                 <td>{i + 1}</td>
@@ -228,7 +229,7 @@ function Transaksi() {
                     } disabled className="input w-full" type="date" placeholder="tgl masuk" required />
                 </label>
                 <label className='text-sm'>Tgl Bayar:
-                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'delete'} {...register('tgl_bayar')} className="input w-full" type="date" placeholder="biaya" required />
+                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'delete'} className="input w-full" type="date" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Petugas:
                     <select {...register('_petugas')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>

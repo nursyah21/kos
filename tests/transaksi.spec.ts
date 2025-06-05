@@ -19,17 +19,17 @@ test.beforeEach('setup login', async ({ page }) => {
 test('crud transaksi', async ({ page }) => {
     // create
     await page.locator('button', { hasText: /transaksi/i }).click()
-    await page.locator('select[name="kamar"]').selectOption({ index: 1 })
+    await page.locator('select[name="_kamar"]').selectOption({ index: 1 })
     await page.locator('input[name="tgl_bayar"]').fill('2020-12-30')
-    await page.locator('select[name="petugas"]').selectOption({ index: 1 })
+    await page.locator('select[name="_petugas"]').selectOption({ index: 1 })
     await page.locator('input[name="image"]').setInputFiles('./tests/assets/pic1.jpg')
     await page.click('button[type="submit"]')
 
     // delete
-    await page.locator('tr', { hasText: /2020-11-30/i }).first().locator('button[id="dropdown"]').click()
-    await page.locator('tr', { hasText: /2020-11-30/i }).first().locator('button[id="delete"]').click()
+    await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="delete"]').click()
 
-    await expect(page.locator('input[name="tgl_bayar"]')).toHaveValue('2020-11-30')
+    await expect(page.locator('input[name="tgl_bayar"]')).toHaveValue('2020-12-30')
     await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)
     await page.click('button[type="submit"]')
 })
