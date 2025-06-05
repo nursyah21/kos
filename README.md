@@ -26,6 +26,7 @@ management system boarding house build with react and firebase
 - frontend
     - react
     - tailwind (styling)
+    - react hook form (form management)
     - zustand (state management)
     - swr (data fetching)
 
