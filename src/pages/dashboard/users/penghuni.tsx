@@ -44,14 +44,14 @@ const useHooks = () => {
 
     }, [total])
 
-    const openModal = (data?: TSchemaPenghuni, type: TypeSubmit = 'add') => {
+    const openModal =  (data?: TSchemaPenghuni, type: TypeSubmit = 'add') => {
+        setTypeSubmit(type)
         reset()
         if (data) {
             setValue('id', data.id)
             setValue('nama', data.nama)
             setValue('no_hp', data.no_hp)
             setValue('imageChange', data.image)
-            setTypeSubmit(type)
         }
 
         document.querySelector<HtmlDialog>('#modal_penghuni')?.showModal()

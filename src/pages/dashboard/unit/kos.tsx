@@ -46,13 +46,13 @@ const useHooks = () => {
     }, [total])
 
     const openModal = (data?: TSchemaKos, type: TypeSubmit = 'add') => {
+        setTypeSubmit(type)
         reset()
         if (data) {
             setValue('id', data.id)
             setValue('kos', data.kos)
             setValue('address', data.address)
             setValue('imageChange', data.image)
-            setTypeSubmit(type)
         }
         document.querySelector<HtmlDialog>('#modal_kos')?.showModal()
     }

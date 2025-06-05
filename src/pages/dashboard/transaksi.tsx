@@ -46,6 +46,7 @@ const useHooks = () => {
     }, [total])
 
     const openModal = (data?: TSchemaTransaksi, type: TypeSubmit = 'add') => {
+        setTypeSubmit(type)
         reset()
         if (data) {
             setValue('id', data.id)
@@ -55,7 +56,6 @@ const useHooks = () => {
             setValue('tgl_bayar', data.tgl_bayar)
             setValue('biaya', data.biaya)
             setValue('imageChange', data.image)
-            setTypeSubmit(type)
         }
 
         document.querySelector<HtmlDialog>('#modal_transaksi')?.showModal()

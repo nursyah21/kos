@@ -47,6 +47,7 @@ const useHooks = () => {
     }, [total])
 
     const openModal = (data?: TSchemaKamarKos, type: TypeSubmit = 'add') => {
+        setTypeSubmit(type)
         reset()
         if (data) {
             setValue('id', data.id)
@@ -56,7 +57,6 @@ const useHooks = () => {
             setValue('tgl_masuk', data.tgl_masuk)
             setValue('biaya', data.biaya)
             setValue('imageChange', data.image)
-            setTypeSubmit(type)
         }
         
         document.querySelector<HtmlDialog>('#modal_kamar')?.showModal()
