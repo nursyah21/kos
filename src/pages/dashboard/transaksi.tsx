@@ -13,9 +13,9 @@ import Table from '../../components/table';
 import { useFetcherKamar, useFetcherKos, useFetcherPenghuni, useFetcherPetugas, useFetcherTransaksi } from '../../lib/fetcher';
 import { db } from '../../lib/firebase';
 import { upload } from '../../lib/upload';
-import { $ } from '../../lib/utils';
 import type { TSchemaTransaksi } from '../../schema';
 import { schemaTransaksi } from '../../schema';
+import type { HtmlDialog } from '../../types/types';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
@@ -25,11 +25,10 @@ const useHooks = () => {
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const [isUploading, setIsUploading] = useState(false)
 
-    const total = watch('image')
+    const total = watch('image') as any
     useEffect(() => {
         if (!total?.length) { return }
 
-        // @ts-ignore
         if (total[0].size > 5 * 1024 * 1024) {
             toast.error('max size 5mb')
             return
@@ -58,8 +57,8 @@ const useHooks = () => {
             setValue('imageChange', data.image)
             setTypeSubmit(type)
         }
-        // @ts-ignore
-        $('#modal_transaksi').showModal()
+
+        document.querySelector<HtmlDialog>('#modal_transaksi')?.showModal()
     }
 
     // handle submit not work so we just use manual
@@ -91,8 +90,8 @@ const useHooks = () => {
             toast.error(`error ${typeSubmit} transaksi`)
         }
         mutate('transaksi')
-        // @ts-ignore
-        $('#modal_transaksi').close()
+
+        document.querySelector<HtmlDialog>('#modal_transaksi')?.close()
     }
 
     const { data: _data, isLoading: _isLoading } = useFetcherTransaksi()
@@ -163,9 +162,7 @@ function Transaksi() {
             </p>
             <div className='flex bottom-10 right-10 fixed z-10'>
                 <div>
-                    <button className='btn btn-primary'
-                        // @ts-ignore
-                        onClick={openModal}
+                    <button className='btn btn-primary' onClick={() => openModal()}
                     ><Plus />Transaksi</button>
                 </div>
             </div>

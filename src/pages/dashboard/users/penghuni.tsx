@@ -12,9 +12,9 @@ import Table from '../../../components/table';
 import { useFetcherPenghuni } from '../../../lib/fetcher';
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
-import { $ } from '../../../lib/utils';
 import type { TSchemaPenghuni } from '../../../schema';
 import { schemaPenghuni } from '../../../schema';
+import type { HtmlDialog } from '../../../types/types';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
@@ -24,11 +24,10 @@ const useHooks = () => {
     const [typeSubmit, setTypeSubmit] = useState<TypeSubmit>()
     const [isUploading, setIsUploading] = useState(false)
 
-    const total = watch('image')
+    const total = watch('image') as any
     useEffect(() => {
         if (!total?.length) { return }
 
-        // @ts-ignore
         if (total[0].size > 5 * 1024 * 1024) {
             toast.error('max size 5mb')
             return
@@ -54,8 +53,8 @@ const useHooks = () => {
             setValue('imageChange', data.image)
             setTypeSubmit(type)
         }
-        // @ts-ignore
-        $('#modal_penghuni').showModal()
+
+        document.querySelector<HtmlDialog>('#modal_penghuni')?.showModal()
     }
 
     const onSubmit = handleSubmit(async (data) => {
@@ -81,8 +80,8 @@ const useHooks = () => {
             toast.error(`error ${typeSubmit} penghuni`)
         }
         mutate('penghuni')
-        // @ts-ignore
-        $('#modal_penghuni').close()
+
+        document.querySelector<HtmlDialog>('#modal_penghuni')?.close()
     })
     return {
         setValue, register, onSubmit, isSubmitting,
@@ -125,9 +124,7 @@ function Penghuni() {
                 total: {data?.length}
             </p>
             <div className='bottom-10 right-10 fixed z-10'>
-                <button className='btn btn-primary'
-                    // @ts-ignore
-                    onClick={openModal}
+                <button className='btn btn-primary' onClick={() => openModal()}
                 ><Plus />Penghuni</button>
             </div>
             <div className="overflow-x-auto mt-4">

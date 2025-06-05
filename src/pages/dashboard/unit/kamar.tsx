@@ -13,9 +13,9 @@ import Table from '../../../components/table';
 import { useFetcherKamar, useFetcherKos, useFetcherPenghuni } from '../../../lib/fetcher';
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
-import { $ } from '../../../lib/utils';
 import type { TSchemaKamarKos } from '../../../schema';
 import { schemaKamarKos } from '../../../schema';
+import type { HtmlDialog } from '../../../types/types';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
@@ -26,11 +26,10 @@ const useHooks = () => {
     const [isUploading, setIsUploading] = useState(false)
 
 
-    const total = watch('image')
+    const total = watch('image') as any
     useEffect(() => {
         if (!total?.length) { return }
 
-        // @ts-ignore
         if (total[0].size > 5 * 1024 * 1024) {
             toast.error('max size 5mb')
             return
@@ -59,8 +58,8 @@ const useHooks = () => {
             setValue('imageChange', data.image)
             setTypeSubmit(type)
         }
-        // @ts-ignore
-        $('#modal_kamar').showModal()
+        
+        document.querySelector<HtmlDialog>('#modal_kamar')?.showModal()
     }
 
     // handle submit not work so we just use manual
@@ -93,8 +92,8 @@ const useHooks = () => {
             console.log(err)
         }
         mutate('kamar')
-        // @ts-ignore
-        $('#modal_kamar').close()
+
+        document.querySelector<HtmlDialog>('#modal_kamar')?.close()
     }
 
     const { data: _data, isLoading: isLoadingKamar } = useFetcherKamar()
@@ -153,9 +152,7 @@ function Kos() {
             </p>
             <div className='flex bottom-10 right-10 fixed z-10'>
                 <div>
-                    <button className='btn btn-primary'
-                        // @ts-ignore
-                        onClick={openModal}
+                    <button className='btn btn-primary' onClick={() => openModal()}
                     ><Plus />Kamar</button>
                 </div>
             </div>

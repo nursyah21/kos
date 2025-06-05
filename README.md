@@ -120,6 +120,8 @@ yarn preview
 yarn test
 ```
 
+for backend you can use `httpie` to run test. just import `httpie-collection-api-upload.json` from folder api-upload to httpie
+
 ## how to run with docker
 
 **build and up**

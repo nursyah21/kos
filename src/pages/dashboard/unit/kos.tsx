@@ -12,9 +12,9 @@ import Table from '../../../components/table';
 import { useFetcherKos } from '../../../lib/fetcher';
 import { db } from '../../../lib/firebase';
 import { upload } from '../../../lib/upload';
-import { $ } from '../../../lib/utils';
 import type { TSchemaKos } from '../../../schema';
 import { schemaKos } from '../../../schema';
+import type { HtmlDialog } from '../../../types/types';
 
 type TypeSubmit = 'add' | 'edit' | 'delete'
 const useHooks = () => {
@@ -25,11 +25,10 @@ const useHooks = () => {
     const [isUploading, setIsUploading] = useState(false)
 
 
-    const total = watch('image')
+    const total = watch('image') as any
     useEffect(() => {
         if (!total?.length) { return }
 
-        // @ts-ignore
         if (total[0].size > 5 * 1024 * 1024) {
             toast.error('max size 5mb')
             return
@@ -55,8 +54,7 @@ const useHooks = () => {
             setValue('imageChange', data.image)
             setTypeSubmit(type)
         }
-        // @ts-ignore
-        $('#modal_kos').showModal()
+        document.querySelector<HtmlDialog>('#modal_kos')?.showModal()
     }
 
     const onSubmit = handleSubmit(async (data) => {
@@ -83,8 +81,8 @@ const useHooks = () => {
             toast.error(`error ${typeSubmit} kos`)
         }
         mutate('kos')
-        // @ts-ignore
-        $('#modal_kos').close()
+
+        document.querySelector<HtmlDialog>('#modal_kos')?.close()
     })
     return {
         setValue, register, onSubmit, isSubmitting,
@@ -129,9 +127,7 @@ function Kos() {
             </p>
             <div className='flex bottom-10 right-10 fixed z-10'>
                 <div>
-                    <button className='btn btn-primary'
-                        // @ts-ignore
-                        onClick={openModal}
+                    <button className='btn btn-primary' onClick={() => openModal()}
                     ><Plus />Kos</button>
                 </div>
             </div>

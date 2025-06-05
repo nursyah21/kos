@@ -1,5 +1,5 @@
 import _admin from 'firebase-admin';
-// @ts-ignore
+// @ts-ignore if service-account not found
 import serviceAccount from '../../service-account.json';
 
 const admin = _admin.initializeApp({
