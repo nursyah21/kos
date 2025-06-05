@@ -28,18 +28,22 @@ const useHooks = () => {
         window.document.title = `Invoice - ${dataFetching.penghuni.split(' ')[0]} - ${dataFetching.tgl_bayar}`
     }
 
-    return { data, isLoading, print }
+    const notfound = dataFetching?.is_deleted
+
+
+    return { data, isLoading, print, notfound }
 }
 
 function Invoice() {
-    const { data, isLoading, print } = useHooks()
+    const { data, isLoading, print, notfound } = useHooks()
 
     if (isLoading) {
         return <div className='center'>
             <BoxRotate />
         </div>
     }
-    if (data[0][1] == undefined) {
+
+    if (notfound) {
         return <div className="center">
             <h2 className="text-2xl">Invoice not found</h2>
         </div>

@@ -68,6 +68,7 @@ export const schemaTransaksi = yup.object().shape({
     search: yup.string(),
     _kamar: yup.string(),
     _petugas: yup.string(),
+    is_deleted: yup.boolean()
 })
 
 export type TSchemaTransaksi = yup.InferType<typeof schemaTransaksi>

@@ -32,4 +32,14 @@ test('crud transaksi', async ({ page }) => {
     await expect(page.locator('input[name="tgl_bayar"]')).toHaveValue('2020-12-30')
     await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)
     await page.click('button[type="submit"]')
+
+    // restore
+    await page.goto('/dashboard/transaksi/deleted')
+    await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="restore"]').click()
+
+    await expect(page.locator('input[name="tgl_bayar"]')).toHaveValue('2020-12-30')
+    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)
+    await page.click('button[type="submit"]')
+
 })

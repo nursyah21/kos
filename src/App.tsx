@@ -4,6 +4,7 @@ import Index from './pages'
 import Dashboard from './pages/dashboard/dashboard'
 import DashboardIndex from './pages/dashboard/dashboardIndex'
 import Transaksi from './pages/dashboard/transaksi'
+import TransaksiArchive from './pages/dashboard/transaksiArchive'
 import Kamar from './pages/dashboard/unit/kamar'
 import Kos from './pages/dashboard/unit/kos'
 import Penghuni from './pages/dashboard/users/penghuni'
@@ -34,12 +35,13 @@ function App() {
             <Route path='kamar' element={<Kamar />} />
             <Route path='kos' element={<Kos />} />
           </Route>
-          <Route path="transaksi" element={<Transaksi />} />
           <Route path="users" >
             <Route index element={<Navigate to={'penghuni'} />} />
             <Route path='penghuni' element={<Penghuni />} />
             <Route path='petugas' element={<Petugas />} />
           </Route>
+          <Route path="transaksi" element={<Transaksi />} />
+          <Route path="transaksi/deleted" element={<TransaksiArchive />} />
         </Route>
 
       </Routes>

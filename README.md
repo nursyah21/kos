@@ -14,6 +14,7 @@ management system boarding house build with react and firebase
 ![image](screenshots/login.png)
 ![image](screenshots/dashboard.png)
 ![image](screenshots/transaksi.png)
+![image](screenshots/transaksi-deleted.png)
 ![image](screenshots/kamar-kos.png)
 ![image](screenshots/penghuni-petugas.png)
 ![image](screenshots/invoice.png)
@@ -48,7 +49,8 @@ management system boarding house build with react and firebase
 - crud kamar
 - crud penghuni
 - crud petugas
-- crud transaksi
+- crud transaksi (soft delete)
+- archive transaksi
 - invoice
 - dashboard
 

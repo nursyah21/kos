@@ -30,9 +30,9 @@ export const fetcherPetugas = async () => {
     }))
 };
 
-export const fetcherTransaksi = async () => {
+export const fetcherTransaksi = async (is_deleted: boolean) => {
     try {
-        const querySnapshot = await getDocs(query(collection(db, 'transaksi'), where('is_deleted', '==', false), orderBy('tgl_bayar', 'desc')));
+        const querySnapshot = await getDocs(query(collection(db, 'transaksi'), where('is_deleted', '==', is_deleted), orderBy('tgl_bayar', 'desc')));
 
         return querySnapshot.docs.map(doc => ({
             id: doc.id,
@@ -46,8 +46,6 @@ export const fetcherTransaksi = async () => {
 export const fetcherInvoice = async (id: string) => {
     const data = (await getDoc(doc(db, 'transaksi', id))).data() as TSchemaTransaksi
 
-    console.log(data)
-
     return {
         petugas: data.petugas.nama,
         petugas_nohp: data.petugas.no_hp,
@@ -57,7 +55,8 @@ export const fetcherInvoice = async (id: string) => {
         kos: data.kamar.kos.kos,
         kos_address: data.kamar.kos.address,
         tgl_bayar: data.tgl_bayar,
-        biaya: (Number(data.kamar.biaya) * 1000).toLocaleString()
+        biaya: (Number(data.kamar.biaya) * 1000).toLocaleString(),
+        is_deleted: data.is_deleted
     }
 };
 
@@ -73,5 +72,5 @@ export const useFetcherKos = () => useSWR('kos', fetcherKos)
 export const useFetcherKamar = () => useSWR('kamar', fetcherKamar)
 export const useFetcherPenghuni = () => useSWR('penghuni', fetcherPenghuni)
 export const useFetcherPetugas = () => useSWR('petugas', fetcherPetugas)
-export const useFetcherTransaksi = () => useSWR('transaksi', fetcherTransaksi)
+export const useFetcherTransaksi = ({ is_deleted = false }: { is_deleted?: boolean } = {}) => useSWR(['transaksi', is_deleted], ([__dirname, is_deleted]) => fetcherTransaksi(is_deleted))
 export const useFetcherInvoice = (id: string) => useSWR(['invoice', id], ([_, id]) => fetcherInvoice(id))

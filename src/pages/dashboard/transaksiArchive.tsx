@@ -1,10 +1,10 @@
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from '@firebase/firestore';
+import { doc, updateDoc } from '@firebase/firestore';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Ellipsis, Plus } from 'lucide-react';
+import { Ellipsis } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, NavLink } from 'react-router';
+import { NavLink } from 'react-router';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 import BoxRotate from '../../components/boxRotate';
@@ -17,7 +17,7 @@ import type { TSchemaTransaksi } from '../../schema';
 import { schemaTransaksi } from '../../schema';
 import type { HtmlDialog } from '../../types/types';
 
-type TypeSubmit = 'add' | 'delete'
+type TypeSubmit = 'restore'
 const useHooks = () => {
     const { watch, setValue, register, reset, formState: { isSubmitting } } = useForm({
         resolver: yupResolver(schemaTransaksi)
@@ -45,7 +45,7 @@ const useHooks = () => {
 
     }, [total])
 
-    const openModal = (data?: TSchemaTransaksi, type: TypeSubmit = 'add') => {
+    const openModal = (data?: TSchemaTransaksi, type: TypeSubmit = 'restore') => {
         setTypeSubmit(type)
         reset()
         if (data) {
@@ -68,31 +68,15 @@ const useHooks = () => {
     const onSubmit = async (e: FormEvent) => {
         e.preventDefault()
         try {
-            const newData = {
-                kamar: dataKamar?.filter(e => e.id == watch('_kamar')).map(e => ({
-                    ...e,
-                    kos: dataKos?.filter(i => i.id == e.kos)[0],
-                    penghuni: dataPenghuni?.filter(i => i.id == e.penghuni)[0],
-                }))[0],
-                petugas: dataPetugas?.filter(e => e.id == watch('_petugas'))[0],
-                tgl_bayar: watch('tgl_bayar'),
-                image: watch('imageChange') ?? '/emptyImage.png',
-                created_at: serverTimestamp(),
-                is_deleted: false
-            }
-            if (typeSubmit == 'add') {
-                await addDoc(collection(db, 'transaksi'), newData);
-                toast.success('transaksi added!')
-            }
-            else if (typeSubmit == 'delete') {
+            if (typeSubmit == 'restore') {
                 await updateDoc(doc(db, 'transaksi', watch('id')!),
                     {
-                        is_deleted: true,
-                        deleted_at: serverTimestamp()
+                        is_deleted: false,
+                        deleted_at: ''
                     });
-                toast.success('transaksi deleted!')
+                toast.success('transaksi restored!')
             }
-            mutate(['transaksi', false])
+            mutate(['transaksi', true])
             document.querySelector<HtmlDialog>('#modal_transaksi')?.close()
         } catch (err) {
             console.log(err)
@@ -100,7 +84,7 @@ const useHooks = () => {
         }
     }
 
-    const { data: _data, isLoading: _isLoading } = useFetcherTransaksi()
+    const { data: _data, isLoading: _isLoading } = useFetcherTransaksi({is_deleted: true})
     const { data: _dataKamar, isLoading: isLoadingKamar } = useFetcherKamar()
     const { data: dataKos, isLoading: isLoadingKos } = useFetcherKos()
     const { data: dataPenghuni, isLoading: isLoadingPenghuni } = useFetcherPenghuni()
@@ -138,7 +122,7 @@ const useHooks = () => {
     }
 }
 
-function Transaksi() {
+function TransaksiArchive() {
     const { register, onSubmit, isSubmitting,
         watch, openModal, typeSubmit, isUploading, isLoading,
         data, dataKamar, dataPetugas, dataPenghuni
@@ -157,7 +141,7 @@ function Transaksi() {
                     {
                         [['/dashboard/transaksi', 'Transaksi'],
                         ['/dashboard/transaksi/deleted', 'Archive']].map((item, id) =>
-                            <NavLink key={id} to={item[0]} className={({ isActive }) => isActive ? '' : 'opacity-60'}>
+                            <NavLink key={id} to={item[0]} end className={({ isActive }) => isActive ? '' : 'opacity-60'}>
                                 <h2 className="text-2xl font-semibold">{item[1]}</h2>
                             </NavLink>
                         )
@@ -170,12 +154,6 @@ function Transaksi() {
             <p className='text-sm text-slate-400 text-right'>
                 total: {data?.length}
             </p>
-            <div className='flex bottom-10 right-10 fixed z-10'>
-                <div>
-                    <button className='btn btn-primary' onClick={() => openModal()}
-                    ><Plus />Transaksi</button>
-                </div>
-            </div>
 
             <div className="overflow-x-auto mt-4">
                 <Table rows={['#', 'Penghuni', 'Kamar', 'Kos', 'Tgl Bayar', 'Biaya (Rb)', 'Petugas', '']}>
@@ -187,7 +165,7 @@ function Transaksi() {
 
                             return new RegExp(watch('search')!, 'i').test(e._penghuni!)
                         })
-                            ?.map((data, i) => <tr key={i}>
+                            ?.map((data, i) => <tr className='text-slate-400' key={i}>
                                 <td>{i + 1}</td>
                                 <td>{data._penghuni}</td>
                                 <td>{data._kamar}</td>
@@ -199,9 +177,8 @@ function Transaksi() {
                                     <div className="dropdown dropdown-end">
                                         <button id='dropdown' className="p-0"><Ellipsis /></button>
                                         <ul className="border menu dropdown-content bg-base-300  w-48  p-2">
-                                            <li><button id='delete' onClick={() =>
-                                                openModal(data, 'delete')}>Soft Delete</button></li>
-                                            <li><Link id='invoice' to={`/invoice/${data.id}`} >Invoice</Link></li>
+                                            <li><button id='restore' onClick={() =>
+                                                openModal(data, 'restore')}>Restore</button></li>
                                         </ul>
                                     </div>
                                 </td>
@@ -213,7 +190,7 @@ function Transaksi() {
         <Modal id='modal_transaksi' title={`${typeSubmit} transaksi`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>Kamar:
-                    <select {...register('_kamar')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                    <select {...register('_kamar')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'restore'} className="select w-full" required>
                         <option value="" disabled>pilih kamar</option>
                         {dataKamar?.map(e => <option key={e.id} value={e.id}>{e.data}</option>)}
                     </select>
@@ -236,10 +213,10 @@ function Transaksi() {
                     } disabled className="input w-full" type="date" placeholder="tgl masuk" required />
                 </label>
                 <label className='text-sm'>Tgl Bayar:
-                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'delete'} className="input w-full" type="date" placeholder="biaya" required />
+                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'restore'} className="input w-full" type="date" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Petugas:
-                    <select {...register('_petugas')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                    <select {...register('_petugas')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'restore'} className="select w-full" required>
                         <option value="" disabled>pilih petugas</option>
                         {dataPetugas?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
                     </select>
@@ -253,7 +230,7 @@ function Transaksi() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit == 'restore'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
                 <button className='btn' disabled={isUploading || isSubmitting} type='submit'>Submit</button>
@@ -262,4 +239,4 @@ function Transaksi() {
     </>);
 }
 
-export default Transaksi;
+export default TransaksiArchive;
