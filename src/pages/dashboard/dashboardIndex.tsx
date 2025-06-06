@@ -6,7 +6,7 @@ function useHooks() {
     const { data: dataTransaksi, isLoading } = useFetcherTransaksi();
 
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
-    
+
     const transaksi = dataTransaksi
         ?.filter(e => Number(e.tgl_bayar.split('-')[1]) === new Date().getMonth() + 1)
         .map(e => ({
@@ -60,16 +60,31 @@ function DashboardIndex() {
 
             <div className="flex gap-4 py-12 sm:flex-row flex-col">
                 <div className="flex-1 shadow-2xl rounded-xl">
-                    <h2 className="text-xl font-semibold">Total Transaksi</h2>
-                    <span className="text-xl">{data?.totalTransaksi}</span>
-                </div>
-
-                <div className="flex-1 shadow-2xl rounded-xl">
                     <h2 className="text-xl font-semibold">Total Pendapatan</h2>
                     <span className="text-xl">Rp{data?.totalPendapatan}</span>
                 </div>
+                <div className="flex-1 shadow-2xl rounded-xl">
+                    <h2 className="text-xl font-semibold">Total Transaksi</h2>
+                    <span className="text-xl">{data?.totalTransaksi}</span>
+                </div>
             </div>
             <div className="shadow-2xl rounded-xl">
+                <div className="shadow-2xl rounded-xl">
+                    <div className='my-4'>
+                        <h2 className="text-xl font-semibold">Pendapatan</h2>
+                        <p className='text-sm text-slate-400'>total pendapatan/hari</p>
+                    </div>
+
+                    <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={data.dataPendapatan} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                            <Line type="monotone" dataKey="totalPendapatan" stroke="#8884d8" />
+                            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                            <XAxis dataKey="day" />
+                            <YAxis />
+                            <Tooltip contentStyle={{ color: 'black' }} formatter={e => e.toLocaleString() + 'k'} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
                 <div className='my-4'>
                     <h2 className="text-xl font-semibold">Transaksi</h2>
                     <p className='text-sm text-slate-400'>total transaksi/hari</p>
@@ -81,22 +96,6 @@ function DashboardIndex() {
                         <XAxis dataKey="day" />
                         <YAxis />
                         <Tooltip contentStyle={{ color: 'black' }} formatter={e => e.toLocaleString()} />
-                    </LineChart>
-                </ResponsiveContainer>
-            </div>
-            <div className="shadow-2xl rounded-xl">
-                <div className='my-4'>
-                    <h2 className="text-xl font-semibold">Pendapatan</h2>
-                    <p className='text-sm text-slate-400'>total pendapatan/hari</p>
-                </div>
-
-                <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={data.dataPendapatan} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                        <Line type="monotone" dataKey="totalPendapatan" stroke="#8884d8" />
-                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                        <XAxis dataKey="day" />
-                        <YAxis />
-                        <Tooltip contentStyle={{ color: 'black' }} formatter={e => e.toLocaleString() + 'k'} />
                     </LineChart>
                 </ResponsiveContainer>
             </div>
