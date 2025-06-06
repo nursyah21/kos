@@ -8,7 +8,7 @@ function useHooks() {
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
     
     const transaksi = dataTransaksi
-        ?.filter(e => Number(e.tgl_bayar.split('-')[1]) == new Date().getMonth() + 1)
+        ?.filter(e => Number(e.tgl_bayar.split('-')[1]) === new Date().getMonth() + 1)
         .map(e => ({
             day: Number(e.tgl_bayar.split('-')[2]),
             biaya: Number(e.kamar.biaya) * 1000
@@ -21,22 +21,22 @@ function useHooks() {
         totalPendapatan: transaksi?.reduce((acc, cur) => acc + Number(cur.biaya), 0).toLocaleString(),
 
         dataTransaksi: transaksi?.reduce((acc, { day }) => {
-            const existing = acc.find(i => i.day === day)
+            const existing = acc.find(i => i.day ==== day)
             existing
                 ? existing.totalTransaksi += 1
                 : acc.push({ day, totalTransaksi: 1 })
             return acc
         }, [{ day: 0, totalTransaksi: 0 }])
-            .filter(e => e.day != 0),
+            .filter(e => e.day !== 0),
 
         dataPendapatan: transaksi?.reduce((acc, { day, biaya }) => {
-            const existing = acc.find(i => i.day === day)
+            const existing = acc.find(i => i.day ==== day)
             existing
                 ? existing.totalPendapatan += biaya / 1000
                 : acc.push({ day, totalPendapatan: biaya / 1000 })
             return acc
         }, [{ day: 0, totalPendapatan: 0 }])
-            .filter(e => e.day != 0),
+            .filter(e => e.day !== 0),
     }
 
     return { data, isLoading, bulan }

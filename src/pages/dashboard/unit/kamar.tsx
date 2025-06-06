@@ -68,19 +68,19 @@ const useHooks = () => {
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
             }
-            if (typeSubmit == 'add') {
+            if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'kamar'), newData);
                 toast.success('kamar added!')
             }
-            else if (typeSubmit == 'edit') {
+            else if (typeSubmit === 'edit') {
                 await updateDoc(doc(db, 'kamar', watch('id')!), newData);
                 toast.success('kamar edited!')
             }
-            else if (typeSubmit == 'delete') {
+            else if (typeSubmit === 'delete') {
                 await deleteDoc(doc(db, 'kamar', watch('id')!));
                 toast.success('kamar deleted!')
             }
-            else if (typeSubmit == 'detail') {
+            else if (typeSubmit === 'detail') {
                 document.querySelector<HtmlDialog>('#modal_kamar')?.close()
                 return
             }
@@ -98,8 +98,8 @@ const useHooks = () => {
 
     const data = _data?.map(e => ({
         ...e,
-        _kos: dataKos?.filter(i => i.id == e.kos)[0]?.kos,
-        _penghuni: dataPenghuni?.filter(i => i.id == e.penghuni)[0]?.nama
+        _kos: dataKos?.filter(i => i.id === e.kos)[0]?.kos,
+        _penghuni: dataPenghuni?.filter(i => i.id === e.penghuni)[0]?.nama
     }))
     const isLoading = isLoadingKamar || isLoadingKos || isLoadingPenghuni || isLoadingPenghuni
 
@@ -190,25 +190,25 @@ function Kos() {
         <Modal id='modal_kamar' title={`${typeSubmit} kamar`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>kos:
-                    <select {...register('kos')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} className="select w-full">
+                    <select {...register('kos')} defaultValue={''} disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} className="select w-full">
                         <option value="" >pilih kos</option>
                         {dataKos?.map(e => (<option key={e.id} value={e.id}>{e.kos}</option>))}
                     </select>
                 </label>
                 <label className='text-sm'>penghuni:
-                    <select {...register('penghuni')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} className="select w-full">
+                    <select {...register('penghuni')} defaultValue={''} disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} className="select w-full">
                         <option value="" >pilih penghuni</option>
                         {dataPenghuni?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
                     </select>
                 </label>
                 <label className='text-sm'>kamar:
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('kamar')} className="input w-full" type="text" placeholder="kamar" required />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('kamar')} className="input w-full" type="text" placeholder="kamar" required />
                 </label>
                 <label className='text-sm'>Biaya (Rb):
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('biaya')} className="input w-full" type="number" placeholder="biaya" required />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('biaya')} className="input w-full" type="number" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Tgl Masuk:
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('tgl_masuk')} className="input w-full" type="date" placeholder="tgl masuk" />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('tgl_masuk')} className="input w-full" type="date" placeholder="tgl masuk" />
                 </label>
                 <label className='text-sm'>Photo kamar: *max 5mb
                     {
@@ -219,10 +219,10 @@ function Kos() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit == 'detail' ? 'Close' : 'Submit'}</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit === 'detail' ? 'Close' : 'Submit'}</button>
             </form>
         </Modal>
     </>);

@@ -69,22 +69,22 @@ const useHooks = () => {
         e.preventDefault()
         try {
             const newData = {
-                kamar: dataKamar?.filter(e => e.id == watch('_kamar')).map(e => ({
+                kamar: dataKamar?.filter(e => e.id === watch('_kamar')).map(e => ({
                     ...e,
-                    kos: dataKos?.filter(i => i.id == e.kos)[0],
-                    penghuni: dataPenghuni?.filter(i => i.id == e.penghuni)[0],
+                    kos: dataKos?.filter(i => i.id === e.kos)[0],
+                    penghuni: dataPenghuni?.filter(i => i.id === e.penghuni)[0],
                 }))[0],
-                petugas: dataPetugas?.filter(e => e.id == watch('_petugas'))[0],
+                petugas: dataPetugas?.filter(e => e.id === watch('_petugas'))[0],
                 tgl_bayar: watch('tgl_bayar'),
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp(),
                 is_deleted: false
             }
-            if (typeSubmit == 'add') {
+            if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'transaksi'), newData);
                 toast.success('transaksi added!')
             }
-            else if (typeSubmit == 'delete') {
+            else if (typeSubmit === 'delete') {
                 await updateDoc(doc(db, 'transaksi', watch('id')!),
                     {
                         is_deleted: true,
@@ -92,7 +92,7 @@ const useHooks = () => {
                     });
                 toast.success('transaksi deleted!')
             }
-            else if (typeSubmit == 'detail') {
+            else if (typeSubmit === 'detail') {
                 document.querySelector<HtmlDialog>('#modal_transaksi')?.close()
                 return
             }
@@ -126,10 +126,10 @@ const useHooks = () => {
 
     const dataKamar = _dataKamar
         ?.filter(e =>
-            dataPenghuni?.filter(i => i.id == e.penghuni).length)
+            dataPenghuni?.filter(i => i.id === e.penghuni).length)
         ?.map(e => ({
             ...e,
-            data: `${e.kamar} - ${dataKos?.filter(i => i.id == e.kos)[0]?.kos}`,
+            data: `${e.kamar} - ${dataKos?.filter(i => i.id === e.kos)[0]?.kos}`,
             biaya: e.biaya,
             tgl_masuk: e.tgl_masuk
         }))
@@ -218,7 +218,7 @@ function Transaksi() {
         <Modal id='modal_transaksi' title={`${typeSubmit} transaksi`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>Kamar:
-                    <select {...register('_kamar')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} className="select w-full" required>
+                    <select {...register('_kamar')} defaultValue={''} disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} className="select w-full" required>
                         <option value="" disabled>pilih kamar</option>
                         {dataKamar?.map(e => <option key={e.id} value={e.id}>{e.data}</option>)}
                     </select>
@@ -226,25 +226,25 @@ function Transaksi() {
                 <label className='text-sm'>Penghuni:
                     <input {...register('penghuni')} value={
                         dataPenghuni?.filter(e =>
-                            e.id == dataKamar?.filter(i => i.id == watch('_kamar'))[0]?.penghuni
+                            e.id === dataKamar?.filter(i => i.id === watch('_kamar'))[0]?.penghuni
                         ).map(e => `${e.nama} - ${e.no_hp}`)
                     } disabled className="input w-full" type="text" placeholder="penghuni" required />
                 </label>
                 <label className='text-sm'>Biaya (Rb):
                     <input {...register('biaya')} value={
-                        dataKamar?.filter(e => e.id == watch('_kamar'))[0]?.biaya
+                        dataKamar?.filter(e => e.id === watch('_kamar'))[0]?.biaya
                     } disabled className="input w-full" type="number" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Tgl Masuk:
                     <input {...register('tgl_masuk')} value={
-                        dataKamar?.filter(e => e.id == watch('_kamar'))[0]?.tgl_masuk
+                        dataKamar?.filter(e => e.id === watch('_kamar'))[0]?.tgl_masuk
                     } disabled className="input w-full" type="date" placeholder="tgl masuk" required />
                 </label>
                 <label className='text-sm'>Tgl Bayar:
-                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} className="input w-full" type="date" placeholder="biaya" required />
+                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} className="input w-full" type="date" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Petugas:
-                    <select {...register('_petugas')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} className="select w-full" required>
+                    <select {...register('_petugas')} defaultValue={''} disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} className="select w-full" required>
                         <option value="" disabled>pilih petugas</option>
                         {dataPetugas?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
                     </select>
@@ -258,10 +258,10 @@ function Transaksi() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit == 'detail' ? 'Close' : 'Submit'}</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit === 'detail' ? 'Close' : 'Submit'}</button>
             </form>
         </Modal>
     </>);

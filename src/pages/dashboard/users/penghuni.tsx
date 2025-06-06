@@ -64,19 +64,19 @@ const useHooks = () => {
                 image: watch('imageChange') ?? '',
                 created_at: serverTimestamp()
             }
-            if (typeSubmit == 'add') {
+            if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'penghuni'), newData);
                 toast.success('penghuni added!')
             }
-            else if (typeSubmit == 'edit') {
+            else if (typeSubmit === 'edit') {
                 await updateDoc(doc(db, 'penghuni', data.id!), newData);
                 toast.success('penghuni edited!')
             }
-            else if (typeSubmit == 'delete') {
+            else if (typeSubmit === 'delete') {
                 await deleteDoc(doc(db, 'penghuni', data.id!));
                 toast.success('penghuni deleted!')
             }
-            else if (typeSubmit == 'detail') {
+            else if (typeSubmit === 'detail') {
                 document.querySelector<HtmlDialog>('#modal_penghuni')?.close()
                 return
             }
@@ -161,10 +161,10 @@ function Penghuni() {
         <Modal id='modal_penghuni' title={`${typeSubmit} penghuni`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>Nama penghuni:
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('nama')} className="input w-full" type="text" placeholder="nama" />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('nama')} className="input w-full" type="text" placeholder="nama" />
                 </label>
                 <label className='text-sm'>No HP penghuni:
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
                 </label>
                 <label className='text-sm'>Photo penghuni: *max 5mb
                     {
@@ -176,10 +176,10 @@ function Penghuni() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit == 'detail' ? 'Close' : 'Submit'}</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit === 'detail' ? 'Close' : 'Submit'}</button>
             </form>
         </Modal>
     </>);

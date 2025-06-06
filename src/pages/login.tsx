@@ -22,7 +22,7 @@ function useHooks() {
         }
     })
     const location = window.location.hostname
-    const isDemo = location == 'localhost' || location.includes('demo')
+    const isDemo = location === 'localhost' || location.includes('demo')
     return { onSubmit, register, isSubmitting, isDemo };
 }
 

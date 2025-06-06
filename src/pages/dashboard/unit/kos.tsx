@@ -65,19 +65,19 @@ const useHooks = () => {
                 created_at: serverTimestamp()
             }
 
-            if (typeSubmit == 'add') {
+            if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'kos'), newData);
                 toast.success('kos added!')
             }
-            else if (typeSubmit == 'edit') {
+            else if (typeSubmit === 'edit') {
                 await updateDoc(doc(db, 'kos', data.id!), newData);
                 toast.success('kos edited!')
             }
-            else if (typeSubmit == 'delete') {
+            else if (typeSubmit === 'delete') {
                 await deleteDoc(doc(db, 'kos', data.id!));
                 toast.success('kos deleted!')
             }
-            else if (typeSubmit == 'detail') {
+            else if (typeSubmit === 'detail') {
                 document.querySelector<HtmlDialog>('#modal_kos')?.close()
                 return
             }
@@ -166,10 +166,10 @@ function Kos() {
         <Modal id='modal_kos' title={`${typeSubmit} kos`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>kos:
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('kos')} className="input w-full" type="text" placeholder="kos" />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('kos')} className="input w-full" type="text" placeholder="kos" />
                 </label>
                 <label className='text-sm'>Alamat:
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('address')} className="input w-full" type="text" placeholder="alamat" />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('address')} className="input w-full" type="text" placeholder="alamat" />
                 </label>
                 <label className='text-sm'>Photo kos: *max 5mb
                     {
@@ -181,10 +181,10 @@ function Kos() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit == 'detail' ? 'Close' :'Submit'}</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit === 'detail' ? 'Close' :'Submit'}</button>
             </form>
         </Modal>
     </>);

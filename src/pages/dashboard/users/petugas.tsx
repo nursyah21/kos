@@ -58,27 +58,33 @@ const useHooks = () => {
         document.querySelector<HtmlDialog>('#modal_petugas')?.showModal()
     }
 
-    const onSubmit = handleSubmit(async (data) => {
+    const onSubmit = handleSubmit(async (_data) => {
         try {
             const newData = {
-                ...data,
+                ..._data,
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
             }
-
-            if (typeSubmit == 'add') {
+            if ((typeSubmit == 'add' || typeSubmit == 'edit') &&
+                data?.some(e => e.nama === _data.nama &&
+                    (typeSubmit !== 'edit' || e.id !== _data.id)
+                )) {
+                toast.error(`${_data.nama} already exist`)
+                return
+            }
+            if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'petugas'), newData);
                 toast.success('petugas added!')
             }
-            else if (typeSubmit == 'edit') {
-                await updateDoc(doc(db, 'petugas', data.id!), newData);
+            else if (typeSubmit === 'edit') {
+                await updateDoc(doc(db, 'petugas', _data.id!), newData);
                 toast.success('petugas edited!')
             }
-            else if (typeSubmit == 'delete') {
-                await deleteDoc(doc(db, 'petugas', data.id!));
+            else if (typeSubmit === 'delete') {
+                await deleteDoc(doc(db, 'petugas', _data.id!));
                 toast.success('petugas deleted!')
             }
-            else if (typeSubmit == 'detail') {
+            else if (typeSubmit === 'detail') {
                 document.querySelector<HtmlDialog>('#modal_petugas')?.close()
                 return
             }
@@ -169,10 +175,10 @@ function Petugas() {
         <Modal id='modal_petugas' title={`${typeSubmit} petugas`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>Nama petugas:
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('nama')} className="input w-full" type="text" placeholder="nama" />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('nama')} className="input w-full" type="text" placeholder="nama" />
                 </label>
                 <label className='text-sm'>No HP petugas:
-                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
                 </label>
                 <label className='text-sm'>Photo petugas: *max 5mb
                     {
@@ -184,10 +190,10 @@ function Petugas() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit == 'detail' ? 'Close' : 'Submit'}</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit === 'detail' ? 'Close' : 'Submit'}</button>
             </form>
         </Modal>
     </>);
