@@ -25,9 +25,26 @@ test('crud transaksi', async ({ page }) => {
     await page.locator('input[name="image"]').setInputFiles('./tests/assets/pic1.jpg')
     await page.click('button[type="submit"]')
 
+    // detail
+    await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="detail"]').click()
+
+    await expect(page.locator('input[name="tgl_bayar"]')).toHaveValue('2020-12-30')
+    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)
+    await page.click('button[type="submit"]')
+
     // delete
     await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="dropdown"]').click()
     await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="delete"]').click()
+
+    await expect(page.locator('input[name="tgl_bayar"]')).toHaveValue('2020-12-30')
+    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)
+    await page.click('button[type="submit"]')
+
+    // restore detail
+    await page.goto('/dashboard/transaksi/deleted')
+    await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /2020-12-30/i }).first().locator('button[id="detail"]').click()
 
     await expect(page.locator('input[name="tgl_bayar"]')).toHaveValue('2020-12-30')
     await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)

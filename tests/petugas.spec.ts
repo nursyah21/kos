@@ -9,7 +9,7 @@ test.beforeEach('setup login', async ({ page }) => {
     await page.click('button[type="submit"]')
 
     await expect(page).toHaveURL('/dashboard')
-await page.goto('/dashboard/users/petugas')
+    await page.goto('/dashboard/users/petugas')
     await expect(page.locator('h2', { hasText: /petugas/i }).first()).toBeVisible()
     await expect(page.locator('div[id="loading"]')).not.toBeVisible()
 });
@@ -21,7 +21,7 @@ test('crud petugas', async ({ page }) => {
     await page.locator('button', { hasText: /petugas/i }).click()
     await page.locator('input[name="nama"]').fill('petugas1')
     await page.locator('input[name="no_hp"]').fill('081234567890')
-    await page.locator('input[name="image"]').setInputFiles('./tests/assets/pic1.jpg')   
+    await page.locator('input[name="image"]').setInputFiles('./tests/assets/pic1.jpg')
     await page.click('button[type="submit"]')
 
     // update
@@ -33,15 +33,24 @@ test('crud petugas', async ({ page }) => {
     await expect(page.locator('input[name="no_hp"]')).toHaveValue('081234567890')
     await page.locator('input[name="no_hp"]').fill('081234567891')
 
-    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src',/.+/)
+    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)
+    await page.click('button[type="submit"]')
+
+    // detail
+    await page.locator('tr', { hasText: /petugas2/i }).locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /petugas2/i }).locator('button[id="detail"]').click()
+
+    await expect(page.locator('input[name="nama"]')).toHaveValue('petugas2')
+    await expect(page.locator('input[name="no_hp"]')).toHaveValue('081234567891')
+    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)
     await page.click('button[type="submit"]')
 
     // delete
     await page.locator('tr', { hasText: /petugas2/i }).locator('button[id="dropdown"]').click()
     await page.locator('tr', { hasText: /petugas2/i }).locator('button[id="delete"]').click()
-    
+
     await expect(page.locator('input[name="nama"]')).toHaveValue('petugas2')
     await expect(page.locator('input[name="no_hp"]')).toHaveValue('081234567891')
-    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src',/.+/)
+    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src', /.+/)
     await page.click('button[type="submit"]')
 })

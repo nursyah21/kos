@@ -16,7 +16,7 @@ import type { TSchemaKos } from '../../../schema';
 import { schemaKos } from '../../../schema';
 import type { HtmlDialog } from '../../../types/types';
 
-type TypeSubmit = 'add' | 'edit' | 'delete'
+type TypeSubmit = 'add' | 'edit' | 'delete' | 'detail'
 const useHooks = () => {
     const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
         resolver: yupResolver(schemaKos)
@@ -76,6 +76,10 @@ const useHooks = () => {
             else if (typeSubmit == 'delete') {
                 await deleteDoc(doc(db, 'kos', data.id!));
                 toast.success('kos deleted!')
+            }
+            else if (typeSubmit == 'detail') {
+                document.querySelector<HtmlDialog>('#modal_kos')?.close()
+                return
             }
             mutate('kos')
             document.querySelector<HtmlDialog>('#modal_kos')?.close()
@@ -148,6 +152,7 @@ function Kos() {
                                 <div className="dropdown dropdown-end">
                                     <button id='dropdown' className="p-0"><Ellipsis /></button>
                                     <ul className="border menu dropdown-content bg-base-300  w-48  p-2">
+                                        <li><button id='detail' onClick={() => openModal(data, 'detail')}>Detail</button></li>
                                         <li><button id='edit' onClick={() => openModal(data, 'edit')}>Edit</button></li>
                                         <li><button id='delete' onClick={() => openModal(data, 'delete')}>Delete</button></li>
                                     </ul>
@@ -161,10 +166,10 @@ function Kos() {
         <Modal id='modal_kos' title={`${typeSubmit} kos`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>kos:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('kos')} className="input w-full" type="text" placeholder="kos" />
+                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('kos')} className="input w-full" type="text" placeholder="kos" />
                 </label>
                 <label className='text-sm'>Alamat:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('address')} className="input w-full" type="text" placeholder="alamat" />
+                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('address')} className="input w-full" type="text" placeholder="alamat" />
                 </label>
                 <label className='text-sm'>Photo kos: *max 5mb
                     {
@@ -176,10 +181,10 @@ function Kos() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>Submit</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit == 'detail' ? 'Close' :'Submit'}</button>
             </form>
         </Modal>
     </>);

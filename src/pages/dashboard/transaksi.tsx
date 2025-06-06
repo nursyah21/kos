@@ -17,7 +17,7 @@ import type { TSchemaTransaksi } from '../../schema';
 import { schemaTransaksi } from '../../schema';
 import type { HtmlDialog } from '../../types/types';
 
-type TypeSubmit = 'add' | 'delete'
+type TypeSubmit = 'add' | 'delete' | 'detail'
 const useHooks = () => {
     const { watch, setValue, register, reset, formState: { isSubmitting } } = useForm({
         resolver: yupResolver(schemaTransaksi)
@@ -91,6 +91,10 @@ const useHooks = () => {
                         deleted_at: serverTimestamp()
                     });
                 toast.success('transaksi deleted!')
+            }
+            else if (typeSubmit == 'detail') {
+                document.querySelector<HtmlDialog>('#modal_transaksi')?.close()
+                return
             }
             mutate(['transaksi', false])
             document.querySelector<HtmlDialog>('#modal_transaksi')?.close()
@@ -199,6 +203,7 @@ function Transaksi() {
                                     <div className="dropdown dropdown-end">
                                         <button id='dropdown' className="p-0"><Ellipsis /></button>
                                         <ul className="border menu dropdown-content bg-base-300  w-48  p-2">
+                                            <li><button id='detail' onClick={() => openModal(data, 'detail')}>Detail</button></li>
                                             <li><button id='delete' onClick={() =>
                                                 openModal(data, 'delete')}>Soft Delete</button></li>
                                             <li><Link id='invoice' to={`/invoice/${data.id}`} >Invoice</Link></li>
@@ -213,7 +218,7 @@ function Transaksi() {
         <Modal id='modal_transaksi' title={`${typeSubmit} transaksi`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>Kamar:
-                    <select {...register('_kamar')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                    <select {...register('_kamar')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} className="select w-full" required>
                         <option value="" disabled>pilih kamar</option>
                         {dataKamar?.map(e => <option key={e.id} value={e.id}>{e.data}</option>)}
                     </select>
@@ -236,10 +241,10 @@ function Transaksi() {
                     } disabled className="input w-full" type="date" placeholder="tgl masuk" required />
                 </label>
                 <label className='text-sm'>Tgl Bayar:
-                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'delete'} className="input w-full" type="date" placeholder="biaya" required />
+                    <input {...register('tgl_bayar')} disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} className="input w-full" type="date" placeholder="biaya" required />
                 </label>
                 <label className='text-sm'>Petugas:
-                    <select {...register('_petugas')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete'} className="select w-full" required>
+                    <select {...register('_petugas')} defaultValue={''} disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} className="select w-full" required>
                         <option value="" disabled>pilih petugas</option>
                         {dataPetugas?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
                     </select>
@@ -253,10 +258,10 @@ function Transaksi() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>Submit</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit == 'detail' ? 'Close' : 'Submit'}</button>
             </form>
         </Modal>
     </>);

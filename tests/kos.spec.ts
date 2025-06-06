@@ -36,6 +36,15 @@ test('crud kos', async ({ page }) => {
     await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src',/.+/)
     await page.click('button[type="submit"]')
 
+    // detail
+    await page.locator('tr', { hasText: /kos2/i }).first().locator('button[id="dropdown"]').click()
+    await page.locator('tr', { hasText: /kos2/i }).first().locator('button[id="detail"]').click()
+    
+    await expect(page.locator('input[name="kos"]')).toHaveValue('kos2')
+    await expect(page.locator('input[name="address"]')).toHaveValue('alamat2')
+    await expect(page.locator('img[alt="Image Preview"]')).toHaveAttribute('src',/.+/)
+    await page.click('button[type="submit"]')
+
     // delete
     await page.locator('tr', { hasText: /kos2/i }).first().locator('button[id="dropdown"]').click()
     await page.locator('tr', { hasText: /kos2/i }).first().locator('button[id="delete"]').click()

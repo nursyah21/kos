@@ -16,7 +16,7 @@ import type { TSchemaPenghuni } from '../../../schema';
 import { schemaPenghuni } from '../../../schema';
 import type { HtmlDialog } from '../../../types/types';
 
-type TypeSubmit = 'add' | 'edit' | 'delete'
+type TypeSubmit = 'add' | 'edit' | 'delete' | 'detail'
 const useHooks = () => {
     const { watch, setValue, register, handleSubmit, reset, formState: { isSubmitting, errors } } = useForm({
         resolver: yupResolver(schemaPenghuni)
@@ -54,7 +54,7 @@ const useHooks = () => {
             setValue('no_hp', data.no_hp)
             setValue('imageChange', data.image)
         }
-        
+
         document.querySelector<HtmlDialog>('#modal_petugas')?.showModal()
     }
 
@@ -77,6 +77,10 @@ const useHooks = () => {
             else if (typeSubmit == 'delete') {
                 await deleteDoc(doc(db, 'petugas', data.id!));
                 toast.success('petugas deleted!')
+            }
+            else if (typeSubmit == 'detail') {
+                document.querySelector<HtmlDialog>('#modal_petugas')?.close()
+                return
             }
             mutate('petugas')
             document.querySelector<HtmlDialog>('#modal_petugas')?.close()
@@ -151,6 +155,7 @@ function Petugas() {
                                 <div className="dropdown dropdown-end">
                                     <button id='dropdown' className="p-0"><Ellipsis /></button>
                                     <ul className="border menu dropdown-content bg-base-300  w-48  p-2">
+                                        <li><button id='detail' onClick={() => openModal(data, 'detail')}>Detail</button></li>
                                         <li><button id='edit' onClick={() => openModal(data, 'edit')}>Edit</button></li>
                                         <li><button id='delete' onClick={() => openModal(data, 'delete')}>Delete</button></li>
                                     </ul>
@@ -164,10 +169,10 @@ function Petugas() {
         <Modal id='modal_petugas' title={`${typeSubmit} petugas`}>
             <form className='mt-6 flex gap-4 flex-col' onSubmit={onSubmit}>
                 <label className='text-sm'>Nama petugas:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('nama')} className="input w-full" type="text" placeholder="nama" />
+                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('nama')} className="input w-full" type="text" placeholder="nama" />
                 </label>
                 <label className='text-sm'>No HP petugas:
-                    <input disabled={isSubmitting || typeSubmit == 'delete'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
+                    <input disabled={isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('no_hp')} className="input w-full" type="number" placeholder="no hp" />
                 </label>
                 <label className='text-sm'>Photo petugas: *max 5mb
                     {
@@ -179,10 +184,10 @@ function Petugas() {
                         />
                     }
                     <div className='flex items-center gap-4'>
-                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
+                        <input disabled={isUploading || isSubmitting || typeSubmit == 'delete' || typeSubmit == 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>Submit</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit ? 'Close' : 'Submit'}</button>
             </form>
         </Modal>
     </>);
