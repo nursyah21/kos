@@ -21,7 +21,7 @@ function useHooks() {
         totalPendapatan: transaksi?.reduce((acc, cur) => acc + Number(cur.biaya), 0).toLocaleString(),
 
         dataTransaksi: transaksi?.reduce((acc, { day }) => {
-            const existing = acc.find(i => i.day ==== day)
+            const existing = acc.find(i => i.day === day)
             existing
                 ? existing.totalTransaksi += 1
                 : acc.push({ day, totalTransaksi: 1 })
@@ -30,7 +30,7 @@ function useHooks() {
             .filter(e => e.day !== 0),
 
         dataPendapatan: transaksi?.reduce((acc, { day, biaya }) => {
-            const existing = acc.find(i => i.day ==== day)
+            const existing = acc.find(i => i.day === day)
             existing
                 ? existing.totalPendapatan += biaya / 1000
                 : acc.push({ day, totalPendapatan: biaya / 1000 })

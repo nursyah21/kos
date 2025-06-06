@@ -57,24 +57,30 @@ const useHooks = () => {
         document.querySelector<HtmlDialog>('#modal_kos')?.showModal()
     }
 
-    const onSubmit = handleSubmit(async (data) => {
+    const onSubmit = handleSubmit(async (_data) => {
         try {
             const newData = {
-                ...data,
+                ..._data,
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
             }
-
+            if ((typeSubmit == 'add' || typeSubmit == 'edit') &&
+                data?.some(e => e.kos === _data.kos &&
+                    (typeSubmit !== 'edit' || e.id !== _data.id)
+                )) {
+                toast.error(`${_data.kos} already exist`)
+                return
+            }
             if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'kos'), newData);
                 toast.success('kos added!')
             }
             else if (typeSubmit === 'edit') {
-                await updateDoc(doc(db, 'kos', data.id!), newData);
+                await updateDoc(doc(db, 'kos', _data.id!), newData);
                 toast.success('kos edited!')
             }
             else if (typeSubmit === 'delete') {
-                await deleteDoc(doc(db, 'kos', data.id!));
+                await deleteDoc(doc(db, 'kos', _data.id!));
                 toast.success('kos deleted!')
             }
             else if (typeSubmit === 'detail') {
@@ -88,9 +94,12 @@ const useHooks = () => {
             toast.error(`error ${typeSubmit} kos`)
         }
     })
+
+    const { data, isLoading } = useFetcherKos()
+
     return {
         setValue, register, onSubmit, isSubmitting,
-        watch, errors, openModal, isUploading,
+        watch, errors, openModal, data, isLoading, isUploading,
         typeSubmit
     }
 }
@@ -98,10 +107,9 @@ const useHooks = () => {
 
 function Kos() {
     const { register, onSubmit, isSubmitting,
-        watch, openModal, typeSubmit, isUploading
+        watch, openModal, data, isLoading, typeSubmit, isUploading
     } = useHooks()
 
-    const { data, isLoading } = useFetcherKos()
 
     if (isLoading) {
         return <div className='center' id='loading'>
@@ -184,7 +192,7 @@ function Kos() {
                         <input disabled={isUploading || isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('image')} className="file-input w-full" type="file" accept='image/*' />
                     </div>
                 </label>
-                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit === 'detail' ? 'Close' :'Submit'}</button>
+                <button className='btn' disabled={isUploading || isSubmitting} type='submit'>{typeSubmit === 'detail' ? 'Close' : 'Submit'}</button>
             </form>
         </Modal>
     </>);

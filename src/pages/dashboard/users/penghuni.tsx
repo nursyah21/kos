@@ -57,23 +57,30 @@ const useHooks = () => {
         document.querySelector<HtmlDialog>('#modal_penghuni')?.showModal()
     }
 
-    const onSubmit = handleSubmit(async (data) => {
+    const onSubmit = handleSubmit(async (_data) => {
         try {
             const newData = {
-                ...data,
+                ..._data,
                 image: watch('imageChange') ?? '',
                 created_at: serverTimestamp()
+            }
+            if ((typeSubmit == 'add' || typeSubmit == 'edit') &&
+                data?.some(e => e.nama === _data.nama &&
+                    (typeSubmit !== 'edit' || e.id !== _data.id)
+                )) {
+                toast.error(`${_data.nama} already exist`)
+                return
             }
             if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'penghuni'), newData);
                 toast.success('penghuni added!')
             }
             else if (typeSubmit === 'edit') {
-                await updateDoc(doc(db, 'penghuni', data.id!), newData);
+                await updateDoc(doc(db, 'penghuni', _data.id!), newData);
                 toast.success('penghuni edited!')
             }
             else if (typeSubmit === 'delete') {
-                await deleteDoc(doc(db, 'penghuni', data.id!));
+                await deleteDoc(doc(db, 'penghuni', _data.id!));
                 toast.success('penghuni deleted!')
             }
             else if (typeSubmit === 'detail') {
@@ -87,9 +94,12 @@ const useHooks = () => {
             toast.error(`error ${typeSubmit} penghuni`)
         }
     })
+    const { data, isLoading } = useFetcherPenghuni()
+
+
     return {
         setValue, register, onSubmit, isSubmitting,
-        watch, errors, openModal,
+        watch, errors, openModal, isLoading, data,
         typeSubmit, isUploading
     }
 }
@@ -97,9 +107,8 @@ const useHooks = () => {
 
 function Penghuni() {
     const { register, onSubmit, isSubmitting,
-        watch, openModal, typeSubmit, isUploading
+        watch, openModal, isLoading, data, typeSubmit, isUploading
     } = useHooks()
-    const { data, isLoading } = useFetcherPenghuni()
 
     if (isLoading) {
         return <div className='center' id='loading'>

@@ -61,12 +61,19 @@ const useHooks = () => {
         document.querySelector<HtmlDialog>('#modal_kamar')?.showModal()
     }
 
-    const onSubmit = handleSubmit(async data => {
+    const onSubmit = handleSubmit(async _data => {
         try {
             const newData = {
-                ...data,
+                ..._data,
                 image: watch('imageChange') ?? '/emptyImage.png',
                 created_at: serverTimestamp()
+            }
+            if ((typeSubmit == 'add' || typeSubmit == 'edit') &&
+                data?.some(e => (e.kamar === _data.kamar && e.kos && _data.kos) &&
+                    (typeSubmit !== 'edit' || e.id !== _data.id)
+                )) {
+                toast.error(`${_data.kamar} already exist`)
+                return
             }
             if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'kamar'), newData);
@@ -195,14 +202,14 @@ function Kos() {
                         {dataKos?.map(e => (<option key={e.id} value={e.id}>{e.kos}</option>))}
                     </select>
                 </label>
+                <label className='text-sm'>kamar:
+                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('kamar')} className="input w-full" type="text" placeholder="kamar" required />
+                </label>
                 <label className='text-sm'>penghuni:
                     <select {...register('penghuni')} defaultValue={''} disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} className="select w-full">
                         <option value="" >pilih penghuni</option>
                         {dataPenghuni?.map(e => (<option key={e.id} value={e.id}>{e.nama} - {e.no_hp}</option>))}
                     </select>
-                </label>
-                <label className='text-sm'>kamar:
-                    <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('kamar')} className="input w-full" type="text" placeholder="kamar" required />
                 </label>
                 <label className='text-sm'>Biaya (Rb):
                     <input disabled={isSubmitting || typeSubmit === 'delete' || typeSubmit === 'detail'} {...register('biaya')} className="input w-full" type="number" placeholder="biaya" required />

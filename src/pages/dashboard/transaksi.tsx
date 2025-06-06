@@ -80,6 +80,8 @@ const useHooks = () => {
                 created_at: serverTimestamp(),
                 is_deleted: false
             }
+            // in transaksi we dont have action to validation and if wrong just delete it
+            // for make it more secure
             if (typeSubmit === 'add') {
                 await addDoc(collection(db, 'transaksi'), newData);
                 toast.success('transaksi added!')
